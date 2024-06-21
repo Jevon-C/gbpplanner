@@ -31,7 +31,7 @@ cd build
 cmake ..
 make
 
-Modified make for windows
+Modified build process for windows
 cmake -G "MinGW Makefiles" ..
 mingw32-make
 ```
