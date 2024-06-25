@@ -47,7 +47,7 @@ class Globals {
     float MAX_SPEED;                                        // [m/s]
     float COMMS_FAILURE_RATE;                               // Proportion of robots [0,1] that do not communicate
     int LOOKAHEAD_MULTIPLE = 3;                             // Parameter affecting how planned path is spaced out in time
-    std::string FORMATION;                                    // Robot formation (CIRCLE or JUNCTION)
+    std::string FORMATION;                                  // Robot formation (CIRCLE or JUNCTION)
     float T0;                                               // Time between current state and next state of planned path
 
     // GBP parameters
@@ -57,10 +57,12 @@ class Globals {
     float SIGMA_FACTOR_OBSTACLE;                            // Sigma for Static obstacle factors
     int NUM_ITERS;                                          // Number of iterations of GBP per timestep
     float DAMPING = 0.;                                     // Damping amount (not used in this work)
-    
+
+    // New parameter for real-time updates
+    bool real_time_updates = false;
+
     Globals();
     int parse_global_args(DArgs::DArgs& dargs);
     void parse_global_args(std::ifstream& config_file);
     void post_parsing();
-
 };

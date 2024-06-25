@@ -9,15 +9,17 @@
 /*****************************************************************/
 // Simply reads the appropriate sections from the config.json
 /*****************************************************************/
-void Globals::parse_global_args(std::ifstream& config_file){
-    
+void Globals::parse_global_args(std::ifstream &config_file)
+{
+
     // Basic parameters
-    nlohmann::json j;
-    config_file >> j;
+    nlohmann::json j; // use the nlohmann json library to read and parse the json file , j is an instance of the json class which will hold the parsed json data from the file
+    config_file >> j; // read the json file and store the parsed data in j
     ASSETS_DIR = j["ASSETS_DIR"];
 
     // Display parameters
-    DISPLAY = static_cast<bool>((int)j["DISPLAY"]);;
+    DISPLAY = static_cast<bool>((int)j["DISPLAY"]);
+    ;
     WORLD_SZ = j["WORLD_SZ"];
     SCREEN_SZ = j["SCREEN_SZ"];
     DRAW_INTERROBOT = static_cast<bool>((int)j["DRAW_INTERROBOT"]);
@@ -43,9 +45,11 @@ void Globals::parse_global_args(std::ifstream& config_file){
     SIGMA_FACTOR_OBSTACLE = j["SIGMA_FACTOR_OBSTACLE"];
     NUM_ITERS = j["NUM_ITERS"];
 
+    // Real-time updates parameter
+    real_time_updates = j.value("real_time_updates", false);
 }
 
-Globals::Globals(){};
+Globals::Globals() {};
 
 /*****************************************************************/
 // Allows for parsing of an external config file
@@ -53,8 +57,8 @@ Globals::Globals(){};
 int Globals::parse_global_args(DArgs::DArgs &dargs)
 {
     // Argument parser
-    this->CONFIG_FILE = dargs("--cfg", "config_file", this->CONFIG_FILE);
-    
+    this->CONFIG_FILE = dargs("--cfg", "config_file", this->CONFIG_FILE); // Extracts the configuration file path from the command line arguments 
+
     if (!dargs.check())
     {
         dargs.print_help();
@@ -62,9 +66,9 @@ int Globals::parse_global_args(DArgs::DArgs &dargs)
         return EXIT_FAILURE;
     }
 
-    std::ifstream my_config_file(CONFIG_FILE);
+    std::ifstream my_config_file(CONFIG_FILE); // This line opens the configuration file 
     assert(my_config_file && "Couldn't find the config file");
-    parse_global_args(my_config_file);
+    parse_global_args(my_config_file); // This line reads the configuration file and stores the parsed data in the appropriate variables
     post_parsing();
 
     return 0;
@@ -75,13 +79,13 @@ int Globals::parse_global_args(DArgs::DArgs &dargs)
 /*****************************************************************/
 void Globals::post_parsing()
 {
-    // Cap max speed, since it should be <= ROBOT_RADIUS/2.f / TIMESTEP:
+    // Cap max speed, since it should be <= ROBOT_RADIUS / 2.f / TIMESTEP:
     // In one timestep a robot should not move more than half of its radius
     // (since we plan for discrete timesteps)
-    if (MAX_SPEED > ROBOT_RADIUS/2.f/TIMESTEP){
-        MAX_SPEED = ROBOT_RADIUS/2.f/TIMESTEP;
+    if (MAX_SPEED > ROBOT_RADIUS / 2.f / TIMESTEP)
+    {
+        MAX_SPEED = ROBOT_RADIUS / 2.f / TIMESTEP;
         print("Capping MAX_SPEED parameter at ", MAX_SPEED);
     }
-    T0 = ROBOT_RADIUS/2.f / MAX_SPEED; // Time between current state and next state of planned path
-
+    T0 = ROBOT_RADIUS / 2.f / MAX_SPEED; // Time between current state and next state of planned path
 }

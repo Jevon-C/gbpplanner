@@ -3,11 +3,15 @@
 // This code is licensed (see LICENSE for details)
 /**************************************************************************************/
 #include <iostream>
+#include <fstream>
 #include <gbp/GBPCore.h>
 #include <Simulator.h>
 #include <Graphics.h>
 #include <Robot.h>
 #include <nanoflann.h>
+#include "json.hpp" // Include the JSON library
+
+using json = nlohmann::json;
 
 /*******************************************************************************/
 // Raylib setup
@@ -77,7 +81,6 @@ void Simulator::draw()
 /*******************************************************************************/
 void Simulator::timestep()
 {
-
     if (globals.SIM_MODE != Timestep)
         return;
 
@@ -227,6 +230,11 @@ void Simulator::createOrDeleteRobots()
     std::vector<std::shared_ptr<Robot>> robots_to_delete{};
     Eigen::VectorXd starting, turning, ending; // Waypoints : [x,y,xdot,ydot].
 
+    // Read the JSON configuration file
+    std::ifstream config_file("config/robot_information_centre.json");
+    json config_data;
+    config_file >> config_data;
+
     if (globals.FORMATION == "circle")
     {
         // Robots must travel to opposite sides of circle
@@ -325,6 +333,53 @@ void Simulator::createOrDeleteRobots()
             }
         }
     }
+    else if (globals.FORMATION == "delegator")
+    {
+        new_robots_needed_ = false;
+        for (int i = 0; i < globals.NUM_ROBOTS; i++)
+        {
+            // Assign current_rid to next_rid_ before incrementing it
+            int current_rid = next_rid_++;
+
+            // Extract starting and ending waypoint parameters from the JSON file using current_rid
+            auto robot_data = config_data["robots"][std::to_string(current_rid)];
+
+            // Extract starting waypoint parameters
+            double starting_waypoint_x = robot_data["starting_waypoint"]["x"];
+            double starting_waypoint_y = robot_data["starting_waypoint"]["y"];
+            double starting_waypoint_x_dot = robot_data["starting_waypoint"]["x_dot"];
+            double starting_waypoint_y_dot = robot_data["starting_waypoint"]["y_dot"];
+
+            // Extract ending waypoint parameters
+            double ending_waypoint_x = robot_data["ending_waypoint"]["x"];
+            double ending_waypoint_y = robot_data["ending_waypoint"]["y"];
+            double ending_waypoint_x_dot = robot_data["ending_waypoint"]["x_dot"];
+            double ending_waypoint_y_dot = robot_data["ending_waypoint"]["y_dot"];
+
+            // Define starting waypoint
+            Eigen::VectorXd starting = Eigen::VectorXd(4);
+            starting << starting_waypoint_x,
+                starting_waypoint_y,
+                starting_waypoint_x_dot,
+                starting_waypoint_y_dot;
+
+            // Define ending waypoint
+            Eigen::VectorXd ending = Eigen::VectorXd(4);
+            ending << ending_waypoint_x,
+                ending_waypoint_y,
+                ending_waypoint_x_dot,
+                ending_waypoint_y_dot;
+
+            std::deque<Eigen::VectorXd> waypoints{starting, ending};
+
+            // Define robot radius and colour here.
+            float robot_radius = globals.ROBOT_RADIUS;
+            Color robot_color = ColorFromHSV(i * 360.0 / (float)globals.NUM_ROBOTS, 1.0, 0.75);
+
+            robots_to_create.push_back(std::make_shared<Robot>(this, current_rid, waypoints, robot_radius, robot_color));
+        }
+    }
+
     else
     {
         print("Shouldn't reach here, formation not defined!");

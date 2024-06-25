@@ -17,7 +17,7 @@ Globals globals;
 int main(int argc, char *argv[]){
     
     srand((int)globals.SEED);                                   // Initialise random seed   
-    DArgs::DArgs dargs(argc, argv);                             // Parse config file argument --cfg <file.json>
+    DArgs::DArgs dargs(argc, argv);                             // Initialise a DArgs object - with the command line arguments
     if (globals.parse_global_args(dargs)) return EXIT_FAILURE;  
     
     Simulator* sim = new Simulator();       // Initialise the simulator

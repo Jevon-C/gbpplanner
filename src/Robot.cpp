@@ -3,7 +3,9 @@
 // This code is licensed (see LICENSE for details)
 /**************************************************************************************/
 #include <Robot.h>
-
+#include "json.hpp"
+#include <iostream>
+#include <fstream>
 /***************************************************************************/
 // Creates a robot. Inputs required are :
 //      - Pointer to the simulator
@@ -116,8 +118,26 @@ void Robot::updateCurrent()
     // In GBP we do this by modifying the prior on the variable
     getVar(0)->change_variable_prior(getVar(0)->mu_ + increment);
     // Real pose update
-    position_ = position_ + increment; // Update the position of the robot - this essenttially is used to move the position of the robot in the simulation
-};
+    position_ = position_ + increment; // Update the position of the robot - this essentially is used to move the position of the robot in the simulation
+
+    // Update the JSON file with the new position if real_time_updates is true
+    if (globals.real_time_updates)
+    {
+        std::ifstream infile("config/robot_information_centre.json");
+        nlohmann::json j;
+        infile >> j;
+        infile.close();
+
+        // Update the robot's position in the JSON object
+        j["robots"][std::to_string(rid_)]["location"]["x"] = position_(0);
+        j["robots"][std::to_string(rid_)]["location"]["y"] = position_(1);
+
+        // Write the updated JSON back to the file
+        std::ofstream outfile("config/robot_information_centre.json");
+        outfile << std::setw(4) << j << std::endl;
+        outfile.close();
+    }
+}
 
 /***************************************************************************************************/
 /* Change the prior of the Horizon state */
@@ -141,6 +161,28 @@ void Robot::updateHorizon()
     {
         if (waypoints_.size() > 1)
             waypoints_.pop_front();
+
+        // Open the JSON file and read the new waypoint
+        std::ifstream config_file("config/robot_information_centre.json");
+        nlohmann::json config_data;
+        config_file >> config_data;
+        config_file.close();
+
+        // Extract the ending waypoint from the JSON file using the robot's rid
+        auto robot_data = config_data["robots"][std::to_string(rid_)];
+        double ending_waypoint_x = robot_data["ending_waypoint"]["x"];
+        double ending_waypoint_y = robot_data["ending_waypoint"]["y"];
+        double ending_waypoint_x_dot = robot_data["ending_waypoint"]["x_dot"];
+        double ending_waypoint_y_dot = robot_data["ending_waypoint"]["y_dot"];
+
+        Eigen::VectorXd new_waypoint = Eigen::VectorXd(4);
+        new_waypoint << ending_waypoint_x,
+            ending_waypoint_y,
+            ending_waypoint_x_dot,
+            ending_waypoint_y_dot;
+
+        // Add the new waypoint to the waypoints list
+        waypoints_.push_back(new_waypoint);
     }
 }
 
