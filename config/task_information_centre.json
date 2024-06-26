@@ -2,66 +2,10 @@
     "tasks": {
         "1": {
             "id": 1,
-            "entity_type": "robot",
+            "description": "fire",
             "location": {
-                "x": 10,
-                "y": 15,
-                "x_dot": 1.5,
-                "y_dot": 2.0
-            },
-            "waypoint": {
-                "x": 20,
-                "y": 25,
-                "x_dot": 1.0,
-                "y_dot": 1.5
-            }
-        },
-        "2": {
-            "id": 2,
-            "entity_type": "robot",
-            "location": {
-                "x": 20,
-                "y": 25,
-                "x_dot": 2.5,
-                "y_dot": 3.0
-            },
-            "waypoint": {
-                "x": 30,
-                "y": 35,
-                "x_dot": 2.0,
-                "y_dot": 2.5
-            }
-        },
-        "3": {
-            "id": 3,
-            "entity_type": "robot",
-            "location": {
-                "x": 30,
-                "y": 35,
-                "x_dot": 3.5,
-                "y_dot": 4.0
-            },
-            "waypoint": {
-                "x": 40,
-                "y": 45,
-                "x_dot": 3.0,
-                "y_dot": 3.5
-            }
-        },
-        "4": {
-            "id": 4,
-            "entity_type": "robot",
-            "location": {
-                "x": 40,
-                "y": 45,
-                "x_dot": 4.5,
-                "y_dot": 5.0
-            },
-            "waypoint": {
                 "x": 50,
-                "y": 55,
-                "x_dot": 4.0,
-                "y_dot": 4.5
+                "y": 50
             }
         }
     }
