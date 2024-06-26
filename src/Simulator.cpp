@@ -231,9 +231,29 @@ void Simulator::createOrDeleteRobots()
     Eigen::VectorXd starting, turning, ending; // Waypoints : [x,y,xdot,ydot].
 
     // Read the JSON configuration file
-    std::ifstream config_file("config/robot_information_centre.json");
-    json config_data;
-    config_file >> config_data;
+    std::ifstream config_file("../config/robot_information_centre.json");
+    if (!config_file.is_open())
+    {
+        std::cerr << "Error opening config file." << std::endl;
+        return;
+    }
+
+    if (config_file.peek() == std::ifstream::traits_type::eof())
+    {
+        std::cerr << "Error: Config file is empty!" << std::endl;
+        return;
+    }
+
+    nlohmann::json config_data;
+    try
+    {
+        config_file >> config_data;
+    }
+    catch (nlohmann::json::parse_error &e)
+    {
+        std::cerr << "Error parsing JSON: " << e.what() << std::endl;
+        return;
+    }
 
     if (globals.FORMATION == "circle")
     {
@@ -342,60 +362,76 @@ void Simulator::createOrDeleteRobots()
             int current_rid = next_rid_++;
 
             // Extract starting and ending waypoint parameters from the JSON file using current_rid
-            auto robot_data = config_data["robots"][std::to_string(current_rid)];
+            std::string current_rid_str = std::to_string(current_rid);
+            // std::cout << "Debug: Checking Robot ID " << current_rid_str << " in JSON." << std::endl;
 
-            // Extract starting waypoint parameters
-            double starting_waypoint_x = robot_data["starting_waypoint"]["x"];
-            double starting_waypoint_y = robot_data["starting_waypoint"]["y"];
-            double starting_waypoint_x_dot = robot_data["starting_waypoint"]["x_dot"];
-            double starting_waypoint_y_dot = robot_data["starting_waypoint"]["y_dot"];
+            if (config_data["robots"].contains(current_rid_str))
+            {
+                auto robot_data = config_data["robots"][current_rid_str];
 
-            // Extract ending waypoint parameters
-            double ending_waypoint_x = robot_data["ending_waypoint"]["x"];
-            double ending_waypoint_y = robot_data["ending_waypoint"]["y"];
-            double ending_waypoint_x_dot = robot_data["ending_waypoint"]["x_dot"];
-            double ending_waypoint_y_dot = robot_data["ending_waypoint"]["y_dot"];
+                // Extract starting waypoint parameters
+                double starting_waypoint_x = robot_data.value("starting_waypoint.x", 0.0);
+                double starting_waypoint_y = robot_data.value("starting_waypoint.y", 0.0);
+                double starting_waypoint_x_dot = robot_data.value("starting_waypoint.x_dot", 0.0);
+                double starting_waypoint_y_dot = robot_data.value("starting_waypoint.y_dot", 0.0);
 
-            // Define starting waypoint
-            Eigen::VectorXd starting = Eigen::VectorXd(4);
-            starting << starting_waypoint_x,
-                starting_waypoint_y,
-                starting_waypoint_x_dot,
-                starting_waypoint_y_dot;
+                // Extract ending waypoint parameters
+                double ending_waypoint_x = robot_data.value("ending_waypoint.x", 0.0);
+                double ending_waypoint_y = robot_data.value("ending_waypoint.y", 0.0);
+                double ending_waypoint_x_dot = robot_data.value("ending_waypoint.x_dot", 0.0);
+                double ending_waypoint_y_dot = robot_data.value("ending_waypoint.y_dot", 0.0);
 
-            // Define ending waypoint
-            Eigen::VectorXd ending = Eigen::VectorXd(4);
-            ending << ending_waypoint_x,
-                ending_waypoint_y,
-                ending_waypoint_x_dot,
-                ending_waypoint_y_dot;
+                /*
+                std::cout << "Debug: Found Robot ID " << current_rid_str << " in JSON with waypoints (starting: "
+                          << starting_waypoint_x << ", " << starting_waypoint_y << ", " << starting_waypoint_x_dot << ", " << starting_waypoint_y_dot << ")"
+                          << " (ending: " << ending_waypoint_x << ", " << ending_waypoint_y << ", " << ending_waypoint_x_dot << ", " << ending_waypoint_y_dot << ")." << std::endl;
+                */
 
-            std::deque<Eigen::VectorXd> waypoints{starting, ending};
+                // Define starting waypoint
+                Eigen::VectorXd starting = Eigen::VectorXd(4);
+                starting << starting_waypoint_x,
+                    starting_waypoint_y,
+                    starting_waypoint_x_dot,
+                    starting_waypoint_y_dot;
 
-            // Define robot radius and colour here.
-            float robot_radius = globals.ROBOT_RADIUS;
-            Color robot_color = ColorFromHSV(i * 360.0 / (float)globals.NUM_ROBOTS, 1.0, 0.75);
+                // Define ending waypoint
+                Eigen::VectorXd ending = Eigen::VectorXd(4);
+                ending << ending_waypoint_x,
+                    ending_waypoint_y,
+                    ending_waypoint_x_dot,
+                    ending_waypoint_y_dot;
 
-            robots_to_create.push_back(std::make_shared<Robot>(this, current_rid, waypoints, robot_radius, robot_color));
+                std::deque<Eigen::VectorXd> waypoints{starting, ending};
+
+                // Define robot radius and colour here.
+                float robot_radius = globals.ROBOT_RADIUS;
+                Color robot_color = ColorFromHSV(i * 360.0 / (float)globals.NUM_ROBOTS, 1.0, 0.75);
+
+                robots_to_create.push_back(std::make_shared<Robot>(this, current_rid, waypoints, robot_radius, robot_color));
+            }
+            else
+            {
+                std::cerr << "Error: Robot ID " << current_rid_str << " not found in JSON." << std::endl;
+                return;
+            }
         }
     }
-
     else
     {
-        print("Shouldn't reach here, formation not defined!");
-        // Define new formations here!
+        std::cerr << "Shouldn't reach here, formation not defined!" << std::endl;
     }
+
     // Create and/or delete the robots as necessary.
     for (auto robot : robots_to_create)
     {
         robot_positions_[robot->rid_] = std::vector<double>{robot->waypoints_[0](0), robot->waypoints_[0](1)};
         robots_[robot->rid_] = robot;
-    };
+    }
     for (auto robot : robots_to_delete)
     {
         deleteRobot(robot);
-    };
-};
+    }
+}
 
 /*******************************************************************************/
 // Deletes the robot from the simulator's robots_, as well as any variable/factors associated.
