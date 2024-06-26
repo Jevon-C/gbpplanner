@@ -18,7 +18,7 @@
   "COMMUNICATION_RADIUS": 20,
   "MAX_SPEED": 2,
   "COMMS_FAILURE_RATE": 0,
-  "FORMATION": "circle",
+  "FORMATION": "delegator",
   "OBSTACLE_FILE": "",
   "###": "GBP parameters",
   "SIGMA_FACTOR_DYNAMICS": 0.1,
@@ -27,4 +27,3 @@
   "NUM_ITERS": 10,
   "real_time_updates": true
 }
-

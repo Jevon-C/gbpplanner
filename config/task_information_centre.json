@@ -7,6 +7,14 @@
                 "x": 50,
                 "y": 50
             }
+        },
+        "2": {
+            "id": 2,
+            "description": "robbery",
+            "location": {
+                "x": 70,
+                "y": 80
+            }
         }
     }
 }
