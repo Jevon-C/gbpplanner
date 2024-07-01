@@ -370,22 +370,28 @@ void Simulator::createOrDeleteRobots()
                 auto robot_data = config_data["robots"][current_rid_str];
 
                 // Extract starting waypoint parameters
-                double starting_waypoint_x = robot_data.value("starting_waypoint.x", 0.0);
-                double starting_waypoint_y = robot_data.value("starting_waypoint.y", 0.0);
-                double starting_waypoint_x_dot = robot_data.value("starting_waypoint.x_dot", 0.0);
-                double starting_waypoint_y_dot = robot_data.value("starting_waypoint.y_dot", 0.0);
+                double starting_waypoint_x = robot_data["starting_waypoint"]["x"].get<double>();
+                double starting_waypoint_y = robot_data["starting_waypoint"]["y"].get<double>();
+                double starting_waypoint_x_dot = robot_data["starting_waypoint"]["x_dot"].get<double>();
+                double starting_waypoint_y_dot = robot_data["starting_waypoint"]["y_dot"].get<double>();
+
+                // Debugging lines to print the extracted starting waypoint parameters
+                std::cout << "Starting Waypoint - X: " << starting_waypoint_x
+                          << ", Y: " << starting_waypoint_y
+                          << ", X_dot: " << starting_waypoint_x_dot
+                          << ", Y_dot: " << starting_waypoint_y_dot << std::endl;
 
                 // Extract ending waypoint parameters
-                double ending_waypoint_x = robot_data.value("ending_waypoint.x", 0.0);
-                double ending_waypoint_y = robot_data.value("ending_waypoint.y", 0.0);
-                double ending_waypoint_x_dot = robot_data.value("ending_waypoint.x_dot", 0.0);
-                double ending_waypoint_y_dot = robot_data.value("ending_waypoint.y_dot", 0.0);
+                double ending_waypoint_x = robot_data["ending_waypoint"]["x"].get<double>();
+                double ending_waypoint_y = robot_data["ending_waypoint"]["y"].get<double>();
+                double ending_waypoint_x_dot = robot_data["ending_waypoint"]["x_dot"].get<double>();
+                double ending_waypoint_y_dot = robot_data["ending_waypoint"]["y_dot"].get<double>();
 
-                /*
-                std::cout << "Debug: Found Robot ID " << current_rid_str << " in JSON with waypoints (starting: "
-                          << starting_waypoint_x << ", " << starting_waypoint_y << ", " << starting_waypoint_x_dot << ", " << starting_waypoint_y_dot << ")"
-                          << " (ending: " << ending_waypoint_x << ", " << ending_waypoint_y << ", " << ending_waypoint_x_dot << ", " << ending_waypoint_y_dot << ")." << std::endl;
-                */
+                // Debugging lines to print the extracted ending waypoint parameters
+                std::cout << "Ending Waypoint - X: " << ending_waypoint_x
+                          << ", Y: " << ending_waypoint_y
+                          << ", X_dot: " << ending_waypoint_x_dot
+                          << ", Y_dot: " << ending_waypoint_y_dot << std::endl;
 
                 // Define starting waypoint
                 Eigen::VectorXd starting = Eigen::VectorXd(4);
@@ -416,6 +422,7 @@ void Simulator::createOrDeleteRobots()
             }
         }
     }
+
     else
     {
         std::cerr << "Shouldn't reach here, formation not defined!" << std::endl;

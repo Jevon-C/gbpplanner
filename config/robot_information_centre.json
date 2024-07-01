@@ -10,16 +10,16 @@
                 "y_dot": 2.0
             },
             "starting_waypoint": {
-                "x": 20,
-                "y": 25,
-                "x_dot": 1.0,
-                "y_dot": 1.5
+                "x": 0,
+                "y": 0,
+                "x_dot": 0,
+                "y_dot": 0
             },
             "ending_waypoint": {
-                "x": 20,
+                "x": 25,
                 "y": 25,
-                "x_dot": 1.0,
-                "y_dot": 1.5
+                "x_dot": 0,
+                "y_dot": 0
             }
         },
         "1": {
@@ -32,16 +32,16 @@
                 "y_dot": 3.0
             },
             "starting_waypoint": {
-                "x": 30,
-                "y": 35,
-                "x_dot": 2.0,
-                "y_dot": 2.5
+                "x": 0,
+                "y": 0,
+                "x_dot": 0,
+                "y_dot": 0
             },
             "ending_waypoint": {
-                "x": 30,
-                "y": 35,
-                "x_dot": 2.0,
-                "y_dot": 2.5
+                "x": 0,
+                "y": 0,
+                "x_dot": 0,
+                "y_dot": 0
             }
         },
         "2": {
@@ -54,16 +54,16 @@
                 "y_dot": 4.0
             },
             "starting_waypoint": {
-                "x": 40,
-                "y": 45,
-                "x_dot": 3.0,
-                "y_dot": 3.5
+                "x": 0,
+                "y": 0,
+                "x_dot": 0,
+                "y_dot": 0
             },
             "ending_waypoint": {
-                "x": 40,
-                "y": 45,
-                "x_dot": 3.0,
-                "y_dot": 3.5
+                "x": 0,
+                "y": 0,
+                "x_dot": 0,
+                "y_dot": 0
             }
         },
         "3": {
@@ -76,16 +76,16 @@
                 "y_dot": 5.0
             },
             "starting_waypoint": {
-                "x": 50,
-                "y": 55,
-                "x_dot": 4.0,
-                "y_dot": 4.5
+                "x": 0,
+                "y": 0,
+                "x_dot": 0,
+                "y_dot": 0
             },
             "ending_waypoint": {
-                "x": 50,
-                "y": 55,
-                "x_dot": 4.0,
-                "y_dot": 4.5
+                "x": 0,
+                "y": 0,
+                "x_dot": 0,
+                "y_dot": 0
             }
         }
     }
