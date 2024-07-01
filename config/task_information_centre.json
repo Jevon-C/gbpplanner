@@ -4,16 +4,16 @@
             "id": 1,
             "description": "fire",
             "location": {
-                "x": 50,
-                "y": 50
+                "x": 0,
+                "y": 25
             }
         },
         "2": {
             "id": 2,
             "description": "robbery",
             "location": {
-                "x": 70,
-                "y": 80
+                "x": 25,
+                "y": 25
             }
         }
     }
