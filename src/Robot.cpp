@@ -200,8 +200,10 @@ void Robot::updateHorizon()
         if (waypoints_.size() > 1)
         {
             waypoints_.pop_front();
-
-            // Open the JSON file and read the new waypoint
+        }
+        else
+        {
+            // Open the JSON file and read the new ending waypoint
             std::ifstream config_file("../config/robot_information_centre.json");
             if (!config_file.is_open())
             {
@@ -228,21 +230,13 @@ void Robot::updateHorizon()
             config_file.close();
 
             std::string rid_str = std::to_string(rid_);
-            // std::cout << "Debug: Checking Robot ID " << rid_str << " in JSON." << std::endl;
-
-            // Extract the next waypoint from the JSON file using the robot's rid
             if (config_data["robots"].contains(rid_str))
             {
                 auto robot_data = config_data["robots"][rid_str];
-                double waypoint_x = robot_data.value("ending_waypoint.x", 0.0);
-                double waypoint_y = robot_data.value("ending_waypoint.y", 0.0);
+                double waypoint_x = robot_data["ending_waypoint"]["x"];
+                double waypoint_y = robot_data["ending_waypoint"]["y"];
                 double waypoint_x_dot = robot_data.value("ending_waypoint.x_dot", 0.0);
                 double waypoint_y_dot = robot_data.value("ending_waypoint.y_dot", 0.0);
-
-                /*
-                std::cout << "Debug: Found Robot ID " << rid_str << " in JSON with waypoints ("
-                          << waypoint_x << ", " << waypoint_y << ", " << waypoint_x_dot << ", " << waypoint_y_dot << ")." << std::endl;
-                */
 
                 Eigen::VectorXd new_waypoint = Eigen::VectorXd(4);
                 new_waypoint << waypoint_x,
@@ -258,12 +252,6 @@ void Robot::updateHorizon()
                 std::cerr << "Error: Robot ID " << rid_str << " not found in JSON." << std::endl;
                 return;
             }
-        }
-        else
-        {
-            // If there are no more waypoints, the robot should stay at the current position
-            horizon->mu_({2, 3}) = Eigen::VectorXd::Zero(2); // Set velocity to zero
-            horizon->change_variable_prior(horizon->mu_);
         }
     }
 }
