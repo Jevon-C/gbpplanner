@@ -12,8 +12,7 @@
 // Camera is also included here. You can set different camera positions/trajectories
 // and then during simulation cycle through them using the SPACEBAR
 
-// Please note: Raylib camera defines the world with positive X = right, positive Z = down, and positive Y = out-of-plane
-// But in our work we use the standard convention of positive X = right, positive Y = down, and positive Z = into-plane
+// Please note: Raylib camera defines the world with positive X = right, positive Y = down, and positive Z = into-plane
 /**************************************************************************/
 class Graphics {
 public:
@@ -30,14 +29,22 @@ public:
     
     Camera3D camera3d = { 0 };                      // Define the camera to look into our 3d world 
     // These represent a set of camera transition frames.
-    std::vector<Vector3> camera_positions_{};
-    std::vector<Vector3> camera_ups_{};
-    std::vector<Vector3> camera_targets_{};
+    std::vector<Vector3> camera_positions_;
+    std::vector<Vector3> camera_ups_;
+    std::vector<Vector3> camera_targets_;
     int camera_idx_ = 0;
     uint32_t camera_clock_=0;    
     bool camera_transition_ = false; 
 
+    // Task Models and Colors
+    Model fireModel_;
+    Model robberyModel_;
+    Color fireColor_;
+    Color robberyColor_;
+
     // Function to update camera based on mouse and key input
     void update_camera();
 
+    // Function to draw the environment and objects
+    void draw();
 };

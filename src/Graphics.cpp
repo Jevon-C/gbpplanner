@@ -12,7 +12,7 @@
 // Please note: Raylib camera defines the world with positive X = right, positive Z = down, and positive Y = out-of-plane
 // But in our work we use the standard convention of positive X = right, positive Y = down, and positive Z = into-plane
 /**************************************************************************/
-Graphics::Graphics(Image obstacleImg) : obstacleImg_(ImageCopy(obstacleImg)){
+Graphics::Graphics(Image obstacleImg) : obstacleImg_(ImageCopy(obstacleImg)) {
     if (!globals.DISPLAY) return;
 
     // Camera is defined by a forward vector (target - position), as well as an up vector (see raylib for more info)
@@ -46,6 +46,15 @@ Graphics::Graphics(Image obstacleImg) : obstacleImg_(ImageCopy(obstacleImg)){
     robotModel_.materials[0].shader = lightShader_;
     robotModel_.materials[0].maps[0].color = WHITE;
 
+    // Task Models
+    fireModel_ = LoadModelFromMesh(GenMeshSphere(1., 50.0f, 50.0f));
+    fireModel_.materials[0].shader = lightShader_;
+    fireColor_ = ORANGE;
+
+    robberyModel_ = LoadModelFromMesh(GenMeshSphere(1., 50.0f, 50.0f));
+    robberyModel_.materials[0].shader = lightShader_;
+    robberyColor_ = GRAY;
+
     // Height map
     Mesh mesh = GenMeshHeightmap(obstacleImg_, (Vector3){ 1.f*globals.WORLD_SZ, 1.f*globals.ROBOT_RADIUS, 1.f*globals.WORLD_SZ }); // Generate heightmap mesh (RAM and VRAM)
     ImageColorInvert(&obstacleImg_);                     // TEXTURE REQUIRES OBSTACLES ARE BLACK
@@ -58,56 +67,56 @@ Graphics::Graphics(Image obstacleImg) : obstacleImg_(ImageCopy(obstacleImg)){
     Light lights[MAX_LIGHTS] = { 0 };
     Vector3 target = camera3d.target;
     Vector3 position = Vector3{target.x+10,target.y+20,target.z+10};
-    lights[0] = CreateLight(LIGHT_POINT, position, target, LIGHTGRAY, lightShader_);                            
+    lights[0] = CreateLight(LIGHT_POINT, position, target, LIGHTGRAY, lightShader_);
 }
 
-Graphics::~Graphics(){
+Graphics::~Graphics() {
     UnloadTexture(texture_img_);
-};
+    UnloadModel(fireModel_);
+    UnloadModel(robberyModel_);
+}
 
 /******************************************************************************************/
 // Use captured mouse input and keypresses and modify the camera view.
 // Also transition between camera viewframes if necessary.
 /******************************************************************************************/
-void Graphics::update_camera()
-{
-    float zoomscale = IsKeyDown(KEY_LEFT_SHIFT) ? 100. :10.;
+void Graphics::update_camera() {
+    float zoomscale = IsKeyDown(KEY_LEFT_SHIFT) ? 100. : 10.;
     float zoom = -(float)GetMouseWheelMove() * zoomscale;
     CameraMoveToTarget(&camera3d, zoom);
-    if (IsMouseButtonDown(MOUSE_BUTTON_MIDDLE))
-    {
+    if (IsMouseButtonDown(MOUSE_BUTTON_MIDDLE)) {
         Vector2 del = GetMouseDelta();
         // FOR UP {0,0,-1} and TOWARDS STRAIGHT DOWN
-        if (IsKeyDown(KEY_LEFT_SHIFT)){
-            CameraPitch(&camera3d, -del.y*0.05, true, true, true);                
+        if (IsKeyDown(KEY_LEFT_SHIFT)) {
+            CameraPitch(&camera3d, -del.y * 0.05, true, true, true);
             // Rotate up direction around forward axis
-            camera3d.up = Vector3RotateByAxisAngle(camera3d.up, Vector3{0.,1.,0.}, -0.05*del.x);                
+            camera3d.up = Vector3RotateByAxisAngle(camera3d.up, Vector3{0., 1., 0.}, -0.05 * del.x);
             Vector3 forward = Vector3Subtract(camera3d.target, camera3d.position);
-            forward = Vector3RotateByAxisAngle(forward, Vector3{0.,1.,0.}, -0.05*del.x);
+            forward = Vector3RotateByAxisAngle(forward, Vector3{0., 1., 0.}, -0.05 * del.x);
             camera3d.position = Vector3Subtract(camera3d.target, forward);
-        } else if (IsKeyDown(KEY_LEFT_CONTROL)){
-            float zoom = del.y*0.1;
+        } else if (IsKeyDown(KEY_LEFT_CONTROL)) {
+            float zoom = del.y * 0.1;
             CameraMoveToTarget(&camera3d, zoom);
         } else {
             // Camera movement
             CameraMoveRight(&camera3d, -del.x, true);
-            Vector3 D = GetCameraUp(&camera3d); D.y = 0.;
+            Vector3 D = GetCameraUp(&camera3d);
+            D.y = 0.;
             D = Vector3Scale(Vector3Normalize(D), del.y);
             camera3d.position = Vector3Add(camera3d.position, D);
             camera3d.target = Vector3Add(camera3d.target, D);
         }
     }
-    if (camera_transition_){
+    if (camera_transition_) {
         int camera_transition_time = 100;
-        if (camera_clock_==camera_transition_time){
+        if (camera_clock_ == camera_transition_time) {
             camera_transition_ = false;
-            camera_idx_ = (camera_idx_+1)%camera_positions_.size();
+            camera_idx_ = (camera_idx_ + 1) % camera_positions_.size();
             camera_clock_ = 0;
         }
-        camera3d.position = Vector3Lerp(camera_positions_[camera_idx_], camera_positions_[(camera_idx_+1)%camera_positions_.size()], (camera_clock_%camera_transition_time)/(float)camera_transition_time);
-        camera3d.up = Vector3Lerp(camera_ups_[camera_idx_], camera_ups_[(camera_idx_+1)%camera_ups_.size()], (camera_clock_%camera_transition_time)/(float)camera_transition_time);
-        camera3d.target = Vector3Lerp(camera_targets_[camera_idx_], camera_targets_[(camera_idx_+1)%camera_targets_.size()], (camera_clock_%camera_transition_time)/(float)camera_transition_time);
+        camera3d.position = Vector3Lerp(camera_positions_[camera_idx_], camera_positions_[(camera_idx_ + 1) % camera_positions_.size()], (camera_clock_ % camera_transition_time) / (float)camera_transition_time);
+        camera3d.up = Vector3Lerp(camera_ups_[camera_idx_], camera_ups_[(camera_idx_ + 1) % camera_ups_.size()], (camera_clock_ % camera_transition_time) / (float)camera_transition_time);
+        camera3d.target = Vector3Lerp(camera_targets_[camera_idx_], camera_targets_[(camera_idx_ + 1) % camera_targets_.size()], (camera_clock_ % camera_transition_time) / (float)camera_transition_time);
         camera_clock_++;
-
-    }    
+    }
 }

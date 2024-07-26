@@ -19,6 +19,8 @@
 #include <nanoflann.h>
 #include <KDTreeMapOfVectorsAdaptor.h>
 #include <random>
+#include <string>
+#include <vector>
 
 class Robot;
 class Graphics;
@@ -57,6 +59,17 @@ public:
     bool symmetric_factors = false;                 // If true, when inter-robot factors need to be created between two robots,
                                                     // a pair of factors is created (one belonging to each robot). This becomes a redundancy.
 
+    // Task structure to store task information
+    struct Task {
+        std::string description;
+        Vector2 location;
+    };
+
+    // Data structure to store tasks
+    std::vector<Task> tasks_;
+
+    // Function to load tasks from JSON file
+    void loadTasks(const std::string& filePath);
 
     /*******************************************************************************/
     // Create new robots if needed. Handles deletion of robots out of bounds. 

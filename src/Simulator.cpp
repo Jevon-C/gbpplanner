@@ -28,6 +28,9 @@ Simulator::Simulator()
     // Initialise kdtree for storing robot positions (needed for nearest neighbour check)
     treeOfRobots_ = new KDTree(2, robot_positions_, 50);
 
+    // Load tasks from JSON file
+    loadTasks("../config/task_information_centre.json");
+
     // For display only
     // User inputs an obstacle image where the obstacles are BLACK and background is WHITE.
     obstacleImg = LoadImage(globals.OBSTACLE_FILE.c_str());
@@ -37,7 +40,7 @@ Simulator::Simulator()
     // However for calculation purposes the image needs to be inverted.
     ImageColorInvert(&obstacleImg);
     graphics = new Graphics(obstacleImg);
-};
+}
 
 /*******************************************************************************/
 // Destructor
@@ -53,7 +56,42 @@ Simulator::~Simulator()
         delete graphics;
         CloseWindow();
     }
-};
+}
+
+/*******************************************************************************/
+// Function to load tasks from JSON file
+/*******************************************************************************/
+void Simulator::loadTasks(const std::string &filePath)
+{
+    std::ifstream taskFile(filePath);
+    if (!taskFile.is_open())
+    {
+        std::cerr << "Error opening task file: " << filePath << std::endl;
+        return;
+    }
+
+    json taskData;
+    try
+    {
+        taskFile >> taskData;
+    }
+    catch (json::parse_error &e)
+    {
+        std::cerr << "Error parsing JSON: " << e.what() << std::endl;
+        return;
+    }
+    taskFile.close();
+
+    for (const auto &taskEntry : taskData["tasks"].items())
+    {
+        int id = std::stoi(taskEntry.key());
+        std::string description = taskEntry.value()["description"];
+        float x = taskEntry.value()["location"]["x"];
+        float y = taskEntry.value()["location"]["y"];
+
+        tasks_.push_back({description, {x, y}});
+    }
+}
 
 /*******************************************************************************/
 // Drawing graphics.
@@ -71,10 +109,24 @@ void Simulator::draw()
     // Draw Robots
     for (auto [rid, robot] : robots_)
         robot->draw();
+
+    // Draw Tasks
+    for (const auto &task : tasks_)
+    {
+        if (task.description == "fire")
+        {
+            DrawSphere(Vector3{task.location.x, 0.5f, task.location.y}, 2.0f, graphics->fireColor_);
+        }
+        else if (task.description == "robbery")
+        {
+            DrawSphere(Vector3{task.location.x, 0.5f, task.location.y}, 2.0f, graphics->robberyColor_);
+        }
+    }
+
     EndMode3D();
     draw_info(clock_);
     EndDrawing();
-};
+}
 
 /*******************************************************************************/
 // Timestep loop of simulator.
@@ -113,7 +165,7 @@ void Simulator::timestep()
     clock_++;
     if (clock_ >= globals.MAX_TIME)
         globals.RUN = false;
-};
+}
 
 /*******************************************************************************/
 // Use a kd-tree to perform a radius search for neighbours of a robot within comms. range
@@ -146,7 +198,7 @@ void Simulator::calculateRobotNeighbours(std::map<int, std::shared_ptr<Robot>> &
             robot->neighbours_.push_back(it->first);
         }
     }
-};
+}
 
 /*******************************************************************************/
 // Set a proportion of robots to not perform inter-robot communications
@@ -376,10 +428,12 @@ void Simulator::createOrDeleteRobots()
                 double starting_waypoint_y_dot = robot_data["starting_waypoint"]["y_dot"].get<double>();
 
                 // Debugging lines to print the extracted starting waypoint parameters
+                /*
                 std::cout << "Starting Waypoint - X: " << starting_waypoint_x
                           << ", Y: " << starting_waypoint_y
                           << ", X_dot: " << starting_waypoint_x_dot
                           << ", Y_dot: " << starting_waypoint_y_dot << std::endl;
+                */
 
                 // Extract ending waypoint parameters
                 double ending_waypoint_x = robot_data["ending_waypoint"]["x"].get<double>();
@@ -388,10 +442,12 @@ void Simulator::createOrDeleteRobots()
                 double ending_waypoint_y_dot = robot_data["ending_waypoint"]["y_dot"].get<double>();
 
                 // Debugging lines to print the extracted ending waypoint parameters
+                /*
                 std::cout << "Ending Waypoint - X: " << ending_waypoint_x
                           << ", Y: " << ending_waypoint_y
                           << ", X_dot: " << ending_waypoint_x_dot
                           << ", Y_dot: " << ending_waypoint_y_dot << std::endl;
+                */
 
                 // Define starting waypoint
                 Eigen::VectorXd starting = Eigen::VectorXd(4);
