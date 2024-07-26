@@ -25,5 +25,6 @@
   "SIGMA_FACTOR_INTERROBOT": 0.01,
   "SIGMA_FACTOR_OBSTACLE": 0.01,
   "NUM_ITERS": 10,
-  "real_time_updates": false
+  "real_time_updates": false,
+  "RIC_UPDATE_INTERVAL": 100
 }

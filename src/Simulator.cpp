@@ -1,7 +1,3 @@
-/**************************************************************************************/
-// Copyright (c) 2023 Aalok Patwardhan (a.patwardhan21@imperial.ac.uk)
-// This code is licensed (see LICENSE for details)
-/**************************************************************************************/
 #include <iostream>
 #include <fstream>
 #include <gbp/GBPCore.h>
@@ -9,7 +5,7 @@
 #include <Graphics.h>
 #include <Robot.h>
 #include <nanoflann.h>
-#include "json.hpp" // Include the JSON library
+#include "json.hpp"
 
 using json = nlohmann::json;
 
@@ -136,7 +132,7 @@ void Simulator::timestep()
     if (globals.SIM_MODE != Timestep)
         return;
 
-    // Create and/or destory factors depending on a robot's neighbours
+    // Create and/or destroy factors depending on a robot's neighbours
     calculateRobotNeighbours(robots_);
     for (auto [r_id, robot] : robots_)
     {
@@ -160,6 +156,12 @@ void Simulator::timestep()
         robot->updateHorizon();
         robot->updateCurrent();
     }
+
+    // Decrement battery levels at the appropriate intervals
+    decrementBatteries();
+
+    // Update RIC at the specified intervals
+    updateRIC();
 
     // Increase simulation clock by one timestep
     clock_++;
@@ -509,4 +511,74 @@ void Simulator::deleteRobot(std::shared_ptr<Robot> robot)
     }
     robots_.erase(robot->rid_);
     robot_positions_.erase(robot->rid_);
+}
+
+/*******************************************************************************/
+// Method to decrement the battery level of all robots at their respective intervals
+/*******************************************************************************/
+void Simulator::decrementBatteries()
+{
+    for (auto &[rid, robot] : robots_)
+    {
+        if (clock_ % robot->decrement_interval == 0)
+        {
+            robot->decrementBattery();
+        }
+    }
+}
+
+void Simulator::updateRIC()
+{
+    if (globals.real_time_updates && clock_ % globals.RIC_UPDATE_INTERVAL == 0)
+    {
+        std::ifstream infile("../config/robot_information_centre.json");
+        if (!infile.is_open())
+        {
+            std::cerr << "Error opening config file for reading." << std::endl;
+            return;
+        }
+
+        nlohmann::json j;
+        try
+        {
+            infile >> j;
+        }
+        catch (nlohmann::json::parse_error &e)
+        {
+            std::cerr << "Error parsing JSON: " << e.what() << std::endl;
+            return;
+        }
+        infile.close();
+
+        // Debug: Check if JSON content was read correctly
+        std::cout << "Debug: Read JSON content: " << j.dump(4) << std::endl;
+
+        for (auto &[rid, robot] : robots_)
+        {
+            std::string rid_str = std::to_string(rid);
+            if (j["robots"].contains(rid_str))
+            {
+                // Update the battery level
+                j["robots"][rid_str]["battery_level"] = robot->battery_level;
+                // Debug: Print updated battery level
+                std::cout << "Debug: Updated Robot ID " << rid_str << " Battery Level to " << robot->battery_level << std::endl;
+            }
+            else
+            {
+                std::cerr << "Error: Robot ID " << rid_str << " not found in JSON." << std::endl;
+            }
+        }
+
+        std::ofstream outfile("../config/robot_information_centre.json");
+        if (!outfile.is_open())
+        {
+            std::cerr << "Error opening config file for writing." << std::endl;
+            return;
+        }
+        outfile << std::setw(4) << j << std::endl;
+        outfile.close();
+
+        // Debug: Confirm file write
+        std::cout << "Debug: Successfully wrote updated JSON content to file." << std::endl;
+    }
 }

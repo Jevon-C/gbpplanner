@@ -11,7 +11,6 @@
 /*****************************************************************/
 void Globals::parse_global_args(std::ifstream &config_file)
 {
-
     // Basic parameters
     nlohmann::json j; // use the nlohmann json library to read and parse the json file , j is an instance of the json class which will hold the parsed json data from the file
     config_file >> j; // read the json file and store the parsed data in j
@@ -19,7 +18,6 @@ void Globals::parse_global_args(std::ifstream &config_file)
 
     // Display parameters
     DISPLAY = static_cast<bool>((int)j["DISPLAY"]);
-    ;
     WORLD_SZ = j["WORLD_SZ"];
     SCREEN_SZ = j["SCREEN_SZ"];
     DRAW_INTERROBOT = static_cast<bool>((int)j["DRAW_INTERROBOT"]);
@@ -47,6 +45,7 @@ void Globals::parse_global_args(std::ifstream &config_file)
 
     // Real-time updates parameter
     real_time_updates = j.value("real_time_updates", false);
+    RIC_UPDATE_INTERVAL = j.value("RIC_UPDATE_INTERVAL", 100); // Default value is 100
 }
 
 Globals::Globals() {};
@@ -57,7 +56,7 @@ Globals::Globals() {};
 int Globals::parse_global_args(DArgs::DArgs &dargs)
 {
     // Argument parser
-    this->CONFIG_FILE = dargs("--cfg", "config_file", this->CONFIG_FILE); // Extracts the configuration file path from the command line arguments 
+    this->CONFIG_FILE = dargs("--cfg", "config_file", this->CONFIG_FILE); // Extracts the configuration file path from the command line arguments
 
     if (!dargs.check())
     {
@@ -66,7 +65,7 @@ int Globals::parse_global_args(DArgs::DArgs &dargs)
         return EXIT_FAILURE;
     }
 
-    std::ifstream my_config_file(CONFIG_FILE); // This line opens the configuration file 
+    std::ifstream my_config_file(CONFIG_FILE); // This line opens the configuration file
     assert(my_config_file && "Couldn't find the config file");
     parse_global_args(my_config_file); // This line reads the configuration file and stores the parsed data in the appropriate variables
     post_parsing();

@@ -3,90 +3,53 @@
 // This code is licensed (see LICENSE for details)
 /**************************************************************************************/
 #pragma once
-#include "Simulator.h"
-#include <memory>
-#include <vector>
 #include <deque>
-#include <Utils.h>
-#include <gbp/GBPCore.h>
-#include <gbp/Factor.h>
-#include <gbp/Factorgraph.h>
+#include <Eigen/Dense>
+#include <GBP/Variable.h>
+#include <GBP/FactorGraph.h>
+#include <GBP/Factor.h>
+#include <raylib.h>
+#include "Simulator.h"
+#include "json.hpp"
 
-extern Globals globals;
-
-/***************************************************************************/
-// Creates a robot. Inputs required are :
-//      - Pointer to the simulator
-//      - A robot id rid (should be taken from simulator->next_rid_++),
-//      - A dequeue of waypoints (which are 4 dimensional [x,y,xdot,ydot])
-//      - Robot radius
-//      - Colour
-// This is a derived class from the FactorGraph class
-/***************************************************************************/
-class Robot : public FactorGraph {
+class Robot : public FactorGraph
+{
 public:
-    // Constructor
-    Robot(Simulator* sim,
+    Robot(Simulator *sim,
           int rid,
           std::deque<Eigen::VectorXd> waypoints,
           float size,
           Color color);
     ~Robot();
 
-
-    Simulator* sim_;                            // Pointer to the simulator
-    int rid_ = 0;                               // Robot id
-    std::deque<Eigen::VectorXd> waypoints_{};   // Dequeue of waypoints (whenever the robot reaches a point, it is popped off the front of the dequeue)
-    float robot_radius_ = 1.;                   // Robot radius
-    Color color_ = DARKGREEN;                   // Colour of robot
-
-    int num_variables_;                         // Number of variables in the planned path (assumed to be the same for all robots)
-    std::vector<int> connected_r_ids_{};        // List of robot ids that are currently connected via inter-robot factors to this robot
-    std::vector<int> neighbours_{};             // List of robot ids that are within comms radius of this robot
-    Image* p_obstacleImage;                     // Pointer to image representing the obstacles in the environment
-    float height_3D_ = 0.f;                     // Height out of plane (for 3d visualisation only)
-    Eigen::VectorXd position_;                  // Position of the robot (equivalent to taking the [x,y] of the current state of the robot)
-
-    /****************************************/
-    //Functions
-    /****************************************/
-    /* Change the prior of the Current state */
     void updateCurrent();
-
-    /* Change the prior of the Horizon state */    
     void updateHorizon();
-
-    /***************************************************************************************************/
-    // For new neighbours of a robot, create inter-robot factors if they don't exist. 
-    // Delete existing inter-robot factors for faraway robots
-    /***************************************************************************************************/    
     void updateInterrobotFactors();
     void createInterrobotFactors(std::shared_ptr<Robot> other_robot);
-    void deleteInterrobotFactors(std::shared_ptr<Robot> other_robot);  
-
-
-    /***************************************************************************************************/    
-    // Drawing function
-    /***************************************************************************************************/    
+    void deleteInterrobotFactors(std::shared_ptr<Robot> other_robot);
     void draw();
+    std::vector<int> getVariableTimesteps(int lookahead_horizon, int lookahead_multiple);
+    void decrementBattery(); // Method to decrement battery level
+    void writeBatteryToJSON(); // Method to write battery level to JSON
 
-    /*******************************************************************************************/
-    // Function for determining the timesteps at which variables in the planned path are placed.
-    /*******************************************************************************************/   
-    std::vector<int> getVariableTimesteps(int H, int M);
+    Eigen::VectorXd position_; // Real position
+    float height_3D_;
+    float robot_radius_;
+    std::deque<Eigen::VectorXd> waypoints_;
+    Color color_;
+    Simulator *sim_;
+    int rid_;
 
+    // Battery variables
+    int battery_level;
+    int battery_decrement;
+    int decrement_interval;
 
-    /*******************************************************************************************/   
-    // Access operator to get a pointer to a variable from the robot.
-    /*******************************************************************************************/   
-    std::shared_ptr<Variable>& operator[] (const int& v_id){
-        int n = variables_.size();
-        int search_vid = ((n + v_id) % n + n) % n;
-        auto it = variables_.begin();
-        std::advance(it, search_vid);
-        return it->second;
-    }    
+    // Inter-robot communication
+    bool interrobot_comms_active_ = true;
+    std::vector<int> connected_r_ids_;
+    std::vector<int> neighbours_;
 
-
+private:
+    int num_variables_;
 };
-

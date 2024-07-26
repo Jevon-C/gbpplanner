@@ -6,6 +6,7 @@
 #include "json.hpp"
 #include <iostream>
 #include <fstream>
+
 /***************************************************************************/
 // Creates a robot. Inputs required are :
 //      - Pointer to the simulator
@@ -23,8 +24,46 @@ Robot::Robot(Simulator *sim,
                             waypoints_(waypoints),
                             robot_radius_(size), color_(color)
 {
-
     height_3D_ = robot_radius_; // Height out of plane for 3d visualisation only
+
+    // Battery level and decrement initialization
+    std::ifstream infile("../config/robot_information_centre.json");
+    if (infile.is_open())
+    {
+        nlohmann::json j;
+        infile >> j;
+        infile.close();
+
+        std::string rid_str = std::to_string(rid_);
+        if (j["robots"].contains(rid_str))
+        {
+            battery_level = j["robots"][rid_str]["battery_level"];
+            battery_decrement = j["robots"][rid_str]["battery_decrement"];
+            decrement_interval = j["robots"][rid_str]["decrement_interval"];
+        }
+        else
+        {
+            // Assign default values if not found
+            std::random_device rd;
+            std::mt19937 gen(rd());
+            std::uniform_int_distribution<> dis(0, 3);
+            battery_level = std::vector<int>{90, 80, 70, 60}[dis(gen)];
+            battery_decrement = 5;
+            decrement_interval = 100;
+        }
+    }
+    else
+    {
+        // Handle the case where the file could not be opened
+        std::cerr << "Error opening config file for battery initialization." << std::endl;
+        // Assign random battery level and default values if file cannot be opened
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::uniform_int_distribution<> dis(0, 3);
+        battery_level = std::vector<int>{90, 80, 70, 60}[dis(gen)];
+        battery_decrement = 5;
+        decrement_interval = 100;
+    }
 
     // Robot will always set its horizon state to move towards the next waypoint.
     // Once this waypoint has been reached, it pops it from the waypoints
@@ -114,7 +153,7 @@ Robot::~Robot()
 void Robot::updateCurrent()
 {
     // Move plan: move plan current state by plan increment
-    Eigen::VectorXd increment = ((*this)[1]->mu_ - (*this)[0]->mu_) * globals.TIMESTEP / globals.T0;
+    Eigen::VectorXd increment = (getVar(1)->mu_ - getVar(0)->mu_) * globals.TIMESTEP / globals.T0;
     // In GBP we do this by modifying the prior on the variable
     getVar(0)->change_variable_prior(getVar(0)->mu_ + increment);
     // Real pose update
@@ -365,7 +404,7 @@ void Robot::draw()
             if (!interrobot_comms_active_ || !sim_->robots_.at(rid)->interrobot_comms_active_)
                 continue;
             DrawCylinderEx(Vector3{(float)position_(0), height_3D_, (float)position_(1)},
-                           Vector3{(float)(*sim_->robots_.at(rid))[0]->mu_(0), sim_->robots_.at(rid)->height_3D_, (float)(*sim_->robots_.at(rid))[0]->mu_(1)},
+                           Vector3{(float)sim_->robots_.at(rid)->getVar(0)->mu_(0), sim_->robots_.at(rid)->height_3D_, (float)sim_->robots_.at(rid)->getVar(0)->mu_(1)},
                            0.1, 0.1, 4, BLACK);
         }
     }
@@ -413,4 +452,55 @@ std::vector<int> Robot::getVariableTimesteps(int lookahead_horizon, int lookahea
     }
 
     return var_list;
+};
+
+/*******************************************************************************/
+// Decrease the battery level of the robot
+/*******************************************************************************/
+void Robot::decrementBattery()
+{
+    if (battery_level > 0)
+    {
+        battery_level -= battery_decrement;
+        if (battery_level < 0)
+        {
+            battery_level = 0; // Ensure battery level doesn't go negative
+        }
+    }
+    writeBatteryToJSON();
+};
+
+void Robot::writeBatteryToJSON()
+{
+    std::ifstream infile("../config/robot_information_centre.json");
+    if (!infile.is_open())
+    {
+        std::cerr << "Error opening config file." << std::endl;
+        return;
+    }
+
+    nlohmann::json j;
+    infile >> j;
+    infile.close();
+
+    std::string rid_str = std::to_string(rid_);
+    if (j["robots"].contains(rid_str))
+    {
+        j["robots"][rid_str]["battery_level"] = battery_level;
+    }
+    else
+    {
+        std::cerr << "Error: Robot ID " << rid_str << " not found in JSON." << std::endl;
+        return;
+    }
+
+    std::ofstream outfile("../config/robot_information_centre.json");
+    if (!outfile.is_open())
+    {
+        std::cerr << "Error opening config file for writing." << std::endl;
+        return;
+    }
+
+    outfile << std::setw(4) << j << std::endl;
+    outfile.close();
 };

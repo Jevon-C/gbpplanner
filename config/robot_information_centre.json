@@ -4,10 +4,10 @@
             "id": 0,
             "entity_type": "fire truck",
             "location": {
-                "x": 10,
-                "y": 15,
-                "x_dot": 1.5,
-                "y_dot": 2.0
+                "x": 5,
+                "y": 0,
+                "x_dot": 0,
+                "y_dot": 0
             },
             "starting_waypoint": {
                 "x": 5,
@@ -20,16 +20,19 @@
                 "y": 0,
                 "x_dot": 0,
                 "y_dot": 0
-            }
+            },
+            "battery_level": 90,
+            "battery_decrement": 5,
+            "decrement_interval": 100
         },
         "1": {
             "id": 1,
             "entity_type": "police car",
             "location": {
-                "x": 20,
-                "y": 25,
-                "x_dot": 2.5,
-                "y_dot": 3.0
+                "x": -5,
+                "y": 0,
+                "x_dot": 0,
+                "y_dot": 0
             },
             "starting_waypoint": {
                 "x": -5,
@@ -38,20 +41,23 @@
                 "y_dot": 0
             },
             "ending_waypoint": {
-                "x": 0,
+                "x": -5,
                 "y": 0,
                 "x_dot": 0,
                 "y_dot": 0
-            }
+            },
+            "battery_level": 80,
+            "battery_decrement": 5,
+            "decrement_interval": 100
         },
         "2": {
             "id": 2,
             "entity_type": "ambulance",
             "location": {
-                "x": 30,
-                "y": 35,
-                "x_dot": 3.5,
-                "y_dot": 4.0
+                "x": 0,
+                "y": 5,
+                "x_dot": 0,
+                "y_dot": 0
             },
             "starting_waypoint": {
                 "x": 0,
@@ -61,19 +67,22 @@
             },
             "ending_waypoint": {
                 "x": 0,
-                "y": 0,
+                "y": 5,
                 "x_dot": 0,
                 "y_dot": 0
-            }
+            },
+            "battery_level": 70,
+            "battery_decrement": 5,
+            "decrement_interval": 100
         },
         "3": {
             "id": 3,
             "entity_type": "fire truck",
             "location": {
-                "x": 40,
-                "y": 45,
-                "x_dot": 4.5,
-                "y_dot": 5.0
+                "x": 0,
+                "y": -5,
+                "x_dot": 0,
+                "y_dot": 0
             },
             "starting_waypoint": {
                 "x": 0,
@@ -83,10 +92,13 @@
             },
             "ending_waypoint": {
                 "x": 0,
-                "y": 0,
+                "y": -5,
                 "x_dot": 0,
                 "y_dot": 0
-            }
+            },
+            "battery_level": 60,
+            "battery_decrement": 5,
+            "decrement_interval": 100
         }
     }
 }
