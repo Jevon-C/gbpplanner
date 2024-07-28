@@ -1,7 +1,7 @@
 #include "Task.h"
 
 Task::Task(int id, std::string description, float x, float y, int intensity, int task_intensity_increment, int increment_interval)
-    : id_(id), description_(description), location_(x, y), intensity_(intensity), task_intensity_increment_(task_intensity_increment), increment_interval_(increment_interval) {}
+    : id_(id), description_(description), location_(x, y), intensity_(intensity), task_intensity_increment_(task_intensity_increment), increment_interval_(increment_interval), being_decremented_(false) {}
 
 int Task::getId() const { return id_; }
 
@@ -28,4 +28,8 @@ nlohmann::json Task::toJSON() const
 
 std::string Task::getDescription() const { return description_; }
 
-int Task::getIntensity() const { return intensity_; } // Add this method
+int Task::getIntensity() const { return intensity_; }
+
+void Task::setBeingDecremented(bool flag) { being_decremented_ = flag; }
+
+bool Task::isBeingDecremented() const { return being_decremented_; }

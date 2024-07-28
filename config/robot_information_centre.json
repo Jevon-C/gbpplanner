@@ -1,7 +1,7 @@
 {
     "robots": {
         "0": {
-            "assigned_task": 1,
+            "assigned_task": 0,
             "battery_decrement": 5,
             "battery_level": 0,
             "capacity": 1,
@@ -59,7 +59,7 @@
         "2": {
             "assigned_task": 0,
             "battery_decrement": 5,
-            "battery_level": 35,
+            "battery_level": 5,
             "capacity": 1,
             "capacity_interval": 100,
             "decrement_interval": 1000,
@@ -87,7 +87,7 @@
         "3": {
             "assigned_task": 0,
             "battery_decrement": 5,
-            "battery_level": 25,
+            "battery_level": 0,
             "capacity": 1,
             "capacity_interval": 100,
             "decrement_interval": 1000,

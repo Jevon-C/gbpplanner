@@ -138,9 +138,12 @@ void Simulator::loadRobots(const std::string &filePath)
 /*******************************************************************************/
 // Increment the intensity of tasks at their respective intervals
 /*******************************************************************************/
-void Simulator::incrementTaskIntensity() {
-    for (auto &task : tasks_) {
-        if (clock_ % task.getIncrementInterval() == 0) {
+void Simulator::incrementTaskIntensity()
+{
+    for (auto &task : tasks_)
+    {
+        if (clock_ % task.getIncrementInterval() == 0 && !task.isBeingDecremented())
+        { // Check if task is being decremented
             task.incrementIntensity();
             std::cout << "Task ID: " << task.getId() << " Intensity incremented to: " << task.getIntensity() << std::endl;
         }
@@ -152,11 +155,29 @@ void Simulator::incrementTaskIntensity() {
 /*******************************************************************************/
 void Simulator::checkAndDecrementTaskIntensity()
 {
+    for (auto &task : tasks_)
+    {
+        task.setBeingDecremented(false); // Reset the flag at the beginning of each check
+    }
+
+    // Set the flag for tasks that are within proximity of assigned robots
     for (auto &[rid, robot] : robots_)
     {
         for (auto &task : tasks_)
         {
             if (robot->isWithinProximity(task.getLocation()) && robot->getAssignedTask() == task.getId())
+            {
+                task.setBeingDecremented(true);
+            }
+        }
+    }
+
+    // Decrement the intensity for tasks being interacted with by robots
+    for (auto &[rid, robot] : robots_)
+    {
+        for (auto &task : tasks_)
+        {
+            if (task.isBeingDecremented() && robot->isWithinProximity(task.getLocation()) && robot->getAssignedTask() == task.getId())
             {
                 if (clock_ % robot->getCapacityInterval() == 0)
                 {

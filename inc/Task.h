@@ -14,8 +14,10 @@ public:
     void incrementIntensity();
     void decrementIntensity(int amount);
     nlohmann::json toJSON() const;
-    std::string getDescription() const; // Added method
-    int getIntensity() const; // Add this method
+    std::string getDescription() const;
+    int getIntensity() const;
+    void setBeingDecremented(bool flag);
+    bool isBeingDecremented() const;
 
 private:
     int id_;
@@ -24,4 +26,5 @@ private:
     int intensity_;
     int task_intensity_increment_;
     int increment_interval_;
+    bool being_decremented_;
 };
