@@ -24,7 +24,6 @@ add_library(gbp STATIC
     src/gbp/Factor.cpp 
     src/gbp/Variable.cpp 
     src/gbp/FactorGraph.cpp 
-    
 )
 target_compile_definitions(gbp PUBLIC ASSETS_PATH="${CMAKE_CURRENT_SOURCE_DIR}/assets/")
 target_include_directories(gbp PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/inc ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty)
@@ -51,6 +50,13 @@ add_library(task STATIC
 target_include_directories(task PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/inc)
 target_link_libraries(task PUBLIC gbp)
 
+# Charging Station Library
+add_library(charging_station STATIC
+    src/ChargingStation.cpp
+)
+target_include_directories(charging_station PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/inc)
+target_link_libraries(charging_station PUBLIC gbp)
+
 # Simulator Executable
 add_executable(gbpplanner 
     src/main.cpp
@@ -59,7 +65,7 @@ add_executable(gbpplanner
     src/Simulator.cpp
 )
 target_include_directories(gbpplanner PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/inc)
-target_link_libraries(gbpplanner PUBLIC gbp robot graphics task)
+target_link_libraries(gbpplanner PUBLIC gbp robot graphics task charging_station)
 
 # Platform specific configurations
 if (APPLE)

@@ -172,6 +172,11 @@ void Robot::decrementBattery()
     }
 }
 
+void Robot::incrementBattery(int amount) {
+    battery_level_ += amount;
+    writeBatteryToJSON();
+}
+
 void Robot::writeBatteryToJSON()
 {
     std::ifstream infile("../config/robot_information_centre.json");

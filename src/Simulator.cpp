@@ -27,6 +27,9 @@ Simulator::Simulator()
     // Load tasks from JSON file
     loadTasks("../config/task_information_centre.json");
 
+    // Load charging stations from JSON file
+    loadChargingStations("../config/charging_stations.json");
+
     // For display only
     // User inputs an obstacle image where the obstacles are BLACK and background is WHITE.
     obstacleImg = LoadImage(globals.OBSTACLE_FILE.c_str());
@@ -136,6 +139,41 @@ void Simulator::loadRobots(const std::string &filePath)
 }
 
 /*******************************************************************************/
+// Function to load charging stations from JSON file
+/*******************************************************************************/
+void Simulator::loadChargingStations(const std::string &filePath)
+{
+    std::ifstream chargingStationFile(filePath);
+    if (!chargingStationFile.is_open())
+    {
+        std::cerr << "Error opening charging station file: " << filePath << std::endl;
+        return;
+    }
+
+    json chargingStationData;
+    try
+    {
+        chargingStationFile >> chargingStationData;
+    }
+    catch (json::parse_error &e)
+    {
+        std::cerr << "Error parsing JSON: " << e.what() << std::endl;
+        return;
+    }
+    chargingStationFile.close();
+
+    for (const auto &stationEntry : chargingStationData["charging_stations"].items())
+    {
+        int id = std::stoi(stationEntry.key());
+        float x = stationEntry.value()["location"]["x"];
+        float y = stationEntry.value()["location"]["y"];
+        int charge_rate_interval = stationEntry.value()["charge_rate_interval"];
+        int charge_increment = stationEntry.value()["charge_increment"];
+
+        charging_stations_.emplace_back(id, x, y, charge_rate_interval, charge_increment);
+    }
+}
+/*******************************************************************************/
 // Increment the intensity of tasks at their respective intervals
 /*******************************************************************************/
 void Simulator::incrementTaskIntensity()
@@ -189,6 +227,28 @@ void Simulator::checkAndDecrementTaskIntensity()
         }
     }
 }
+
+/*******************************************************************************/
+// Check proximity of robots to charging stations and increment battery level accordingly
+/*******************************************************************************/
+void Simulator::checkAndChargeRobots()
+{
+    for (auto &[rid, robot] : robots_)
+    {
+        for (const auto &station : charging_stations_)
+        {
+            if (robot->isWithinProximity(station.getLocation()))
+            {
+                if (clock_ % station.getChargeRateInterval() == 0)
+                {
+                    robot->incrementBattery(station.getChargeIncrement());
+                    std::cout << "Robot ID: " << robot->getId() << " Battery incremented to: " << robot->getBatteryLevel() << std::endl;
+                }
+            }
+        }
+    }
+}
+
 /*******************************************************************************/
 // Save the current state of tasks and robots to JSON files
 /*******************************************************************************/
@@ -249,6 +309,12 @@ void Simulator::draw()
         }
     }
 
+    // Draw Charging Stations
+    for (const auto &station : charging_stations_)
+    {
+        DrawSphere(Vector3{station.getLocation().x(), 0.5f, station.getLocation().y()}, 2.0f, GREEN);
+    }
+
     // Draw Robots after tasks to render them above the tasks
     for (auto &[rid, robot] : robots_)
     {
@@ -301,6 +367,9 @@ void Simulator::timestep()
 
     // Check proximity of robots to tasks and decrement task intensity accordingly
     checkAndDecrementTaskIntensity();
+
+    // Check proximity of robots to charging stations and increment battery level accordingly
+    checkAndChargeRobots();
 
     // Update RIC at the specified intervals
     updateRIC();

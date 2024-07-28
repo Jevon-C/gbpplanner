@@ -34,6 +34,7 @@ public:
     void draw();
     std::vector<int> getVariableTimesteps(int lookahead_horizon, int lookahead_multiple);
     void decrementBattery();
+    void incrementBattery(int amount);
     void writeBatteryToJSON();
     void writeCapacityToJSON();
     bool isWithinProximity(const Eigen::Vector2f &task_location) const;

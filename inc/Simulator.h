@@ -16,6 +16,7 @@
 #include <string>
 #include <vector>
 #include "Task.h"
+#include "ChargingStation.h"
 #include "json.hpp"  // Added to ensure JSON support
 #include <iostream>  // Added for error logging
 
@@ -61,6 +62,9 @@ public:
 
     // Function to load robots from JSON file
     void loadRobots(const std::string &filePath);
+
+    // Function to load charging stations from JSON file
+    void loadChargingStations(const std::string &filePath);
 
     // Function to increment the intensity of tasks at their respective intervals
     void incrementTaskIntensity();
@@ -119,6 +123,9 @@ public:
     /*******************************************************************************/
     void updateRIC();
 
+    // Method to check proximity of robots to charging stations and increment battery level accordingly
+    void checkAndChargeRobots();
+
     /*******************************************************************************/
     // RANDOM NUMBER GENERATOR.
     // Usage: random_number("normal", mean, sigma) or random_number("uniform", lower, upper)
@@ -145,4 +152,5 @@ public:
 private:
     std::vector<Task> tasks_;                      // Ensure the Task class is defined and included properly
     std::map<int, std::shared_ptr<Robot>> robots_; // Map containing smart pointers to all robots, accessed by their rid.
+    std::vector<ChargingStation> charging_stations_;
 };

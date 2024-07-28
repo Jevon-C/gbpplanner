@@ -2,18 +2,18 @@
     "charging_stations": {
         "1": {
             "location": {
-                "x": 50,
-                "y": 50
+                "x": 40,
+                "y": 40
             },
-            "charge_rate_interval": 5,
+            "charge_rate_interval": 200,
             "charge_increment": 10
         },
         "2": {
             "location": {
-                "x": -50,
-                "y": -50
+                "x": -40,
+                "y": -40
             },
-            "charge_rate_interval": 10,
+            "charge_rate_interval": 200,
             "charge_increment": 20
         }
     }
