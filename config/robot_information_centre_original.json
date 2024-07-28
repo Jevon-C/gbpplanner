@@ -1,9 +1,9 @@
 {
     "robots": {
         "0": {
-            "assigned_task": 0,
+            "assigned_task": 1,
             "battery_decrement": 5,
-            "battery_level": 75,
+            "battery_level": 100,
             "capacity": 1,
             "capacity_interval": 100,
             "decrement_interval": 100,

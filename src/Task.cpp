@@ -11,7 +11,14 @@ int Task::getIncrementInterval() const { return increment_interval_; }
 
 void Task::incrementIntensity() { intensity_ += task_intensity_increment_; }
 
-void Task::decrementIntensity(int amount) { intensity_ -= amount; }
+void Task::decrementIntensity(int amount)
+{
+    intensity_ -= amount;
+    if (intensity_ < 0)
+    {
+        intensity_ = 0; // Ensure intensity does not go below 0
+    }
+}
 
 nlohmann::json Task::toJSON() const
 {
