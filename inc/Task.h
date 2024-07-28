@@ -18,6 +18,7 @@ public:
     int getIntensity() const;
     void setBeingDecremented(bool flag);
     bool isBeingDecremented() const;
+    void writeToJSON() const; // Add this method declaration
 
 private:
     int id_;

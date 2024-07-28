@@ -3,14 +3,14 @@
         "0": {
             "assigned_task": 1,
             "battery_decrement": 5,
-            "battery_level": 100,
+            "battery_level": 0,
             "capacity": 1,
             "capacity_interval": 100,
             "decrement_interval": 100,
             "ending_waypoint": {
-                "x": 5,
+                "x": 0,
                 "x_dot": 0,
-                "y": 0,
+                "y": 25,
                 "y_dot": 0
             },
             "entity_type": "fire truck",
@@ -31,7 +31,7 @@
         "1": {
             "assigned_task": 0,
             "battery_decrement": 5,
-            "battery_level": 65,
+            "battery_level": 0,
             "capacity": 1,
             "capacity_interval": 100,
             "decrement_interval": 100,
@@ -59,7 +59,7 @@
         "2": {
             "assigned_task": 0,
             "battery_decrement": 5,
-            "battery_level": 55,
+            "battery_level": 25,
             "capacity": 1,
             "capacity_interval": 100,
             "decrement_interval": 1000,
@@ -87,7 +87,7 @@
         "3": {
             "assigned_task": 0,
             "battery_decrement": 5,
-            "battery_level": 45,
+            "battery_level": 15,
             "capacity": 1,
             "capacity_interval": 100,
             "decrement_interval": 1000,

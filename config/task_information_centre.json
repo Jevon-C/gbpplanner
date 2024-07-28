@@ -1,26 +1,26 @@
 {
     "tasks": {
         "1": {
-            "id": 1,
             "description": "fire",
+            "id": 1,
+            "increment_interval": 100,
+            "intensity": 20,
             "location": {
-                "x": 0,
-                "y": 25
+                "x": 0.0,
+                "y": 25.0
             },
-            "intensity": 10,
-            "task_intensity_increment": 1,
-            "increment_interval": 100
+            "task_intensity_increment": 1
         },
         "2": {
-            "id": 2,
             "description": "robbery",
+            "id": 2,
+            "increment_interval": 100,
+            "intensity": 64,
             "location": {
-                "x": 25,
-                "y": 25
+                "x": 25.0,
+                "y": 25.0
             },
-            "intensity": 10,
-            "task_intensity_increment": 1,
-            "increment_interval": 100
+            "task_intensity_increment": 1
         }
     }
 }
