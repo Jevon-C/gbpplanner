@@ -6,6 +6,7 @@
 #include <Graphics.h>
 #include <Robot.h>
 #include <nanoflann.h>
+#include <iomanip>
 
 using json = nlohmann::json;
 
@@ -382,6 +383,11 @@ void Simulator::timestep()
     clock_++;
     if (clock_ >= globals.MAX_TIME)
         globals.RUN = false;
+
+    if (clock_ % globals.temporal_history_interval == 0)
+    {
+        recordTemporalHistory();
+    }
 
     // Save state to JSON after each timestep
     // saveStateToJSON();
@@ -790,6 +796,71 @@ void Simulator::updateRIC()
             return;
         }
         outfile << std::setw(4) << j << std::endl;
+        outfile.close();
+    }
+}
+
+/*******************************************************************************/
+// Temporal history functions
+/*******************************************************************************/
+
+void Simulator::initializeTemporalHistory()
+{
+    nlohmann::json initialData;
+    initialData["0"] = captureCurrentState();
+
+    std::ofstream historyFile("../config/temporal_history.json");
+    if (historyFile.is_open())
+    {
+        historyFile << std::setw(4) << initialData << std::endl;
+        historyFile.close();
+    }
+}
+
+// Function to capture the current state of robots and tasks
+nlohmann::json Simulator::captureCurrentState()
+{
+    nlohmann::json state;
+
+    // Capture the state of robots
+    for (const auto &[rid, robot] : robots_)
+    {
+        state["robots"][std::to_string(rid)] = {
+            {"battery_level", robot->getBatteryLevel()},
+            {"location", {{"x", robot->getPosition().x()}, {"y", robot->getPosition().y()}}}};
+    }
+
+    // Capture the state of tasks
+    for (const auto &task : tasks_)
+    {
+        state["tasks"][std::to_string(task.getId())] = {
+            {"intensity", task.getIntensity()}};
+    }
+
+    return state;
+}
+
+// Function to record the state to the temporal history JSON file at regular intervals
+void Simulator::recordTemporalHistory()
+{
+    std::ifstream infile("../config/temporal_history.json");
+    nlohmann::json history;
+
+    // Read the existing history if the file exists
+    if (infile.is_open())
+    {
+        infile >> history;
+        infile.close();
+    }
+
+    // Add the new record with the current timestamp as the key
+    history[std::to_string(clock_)] = captureCurrentState();
+
+    // Write the updated history back to the file
+    std::ofstream outfile("../config/temporal_history.json");
+    if (outfile.is_open())
+    {
+        outfile << std::setw(4) << history << std::endl;
         outfile.close();
     }
 }

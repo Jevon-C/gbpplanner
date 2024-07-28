@@ -1,0 +1,532 @@
+{
+    "0": {
+        "tasks": {
+            "1": {
+                "intensity": 176
+            },
+            "2": {
+                "intensity": 197
+            }
+        }
+    },
+    "1000": {
+        "robots": {
+            "0": {
+                "battery_level": 61,
+                "location": {
+                    "x": 31.965679168701172,
+                    "y": 40.0
+                }
+            },
+            "1": {
+                "battery_level": 0,
+                "location": {
+                    "x": -5.0,
+                    "y": 0.0
+                }
+            },
+            "2": {
+                "battery_level": 0,
+                "location": {
+                    "x": 0.0,
+                    "y": 5.0
+                }
+            },
+            "3": {
+                "battery_level": 0,
+                "location": {
+                    "x": 0.0,
+                    "y": -5.0
+                }
+            }
+        },
+        "tasks": {
+            "1": {
+                "intensity": 186
+            },
+            "2": {
+                "intensity": 207
+            }
+        }
+    },
+    "1200": {
+        "robots": {
+            "0": {
+                "battery_level": 51,
+                "location": {
+                    "x": 0.498602956533432,
+                    "y": 40.0
+                }
+            },
+            "1": {
+                "battery_level": 0,
+                "location": {
+                    "x": -5.0,
+                    "y": 0.0
+                }
+            },
+            "2": {
+                "battery_level": 0,
+                "location": {
+                    "x": 0.0,
+                    "y": 5.0
+                }
+            },
+            "3": {
+                "battery_level": 0,
+                "location": {
+                    "x": 0.0,
+                    "y": -5.0
+                }
+            }
+        },
+        "tasks": {
+            "1": {
+                "intensity": 188
+            },
+            "2": {
+                "intensity": 209
+            }
+        }
+    },
+    "1400": {
+        "robots": {
+            "0": {
+                "battery_level": 41,
+                "location": {
+                    "x": -0.0179696474224329,
+                    "y": 40.0
+                }
+            },
+            "1": {
+                "battery_level": 0,
+                "location": {
+                    "x": -5.0,
+                    "y": 0.0
+                }
+            },
+            "2": {
+                "battery_level": 0,
+                "location": {
+                    "x": 0.0,
+                    "y": 5.0
+                }
+            },
+            "3": {
+                "battery_level": 0,
+                "location": {
+                    "x": 0.0,
+                    "y": -5.0
+                }
+            }
+        },
+        "tasks": {
+            "1": {
+                "intensity": 190
+            },
+            "2": {
+                "intensity": 211
+            }
+        }
+    },
+    "1600": {
+        "robots": {
+            "0": {
+                "battery_level": 31,
+                "location": {
+                    "x": -0.8301951289176941,
+                    "y": 40.0
+                }
+            },
+            "1": {
+                "battery_level": 0,
+                "location": {
+                    "x": -5.0,
+                    "y": 0.0
+                }
+            },
+            "2": {
+                "battery_level": 0,
+                "location": {
+                    "x": 0.0,
+                    "y": 5.0
+                }
+            },
+            "3": {
+                "battery_level": 0,
+                "location": {
+                    "x": 0.0,
+                    "y": -5.0
+                }
+            }
+        },
+        "tasks": {
+            "1": {
+                "intensity": 192
+            },
+            "2": {
+                "intensity": 213
+            }
+        }
+    },
+    "1800": {
+        "robots": {
+            "0": {
+                "battery_level": 21,
+                "location": {
+                    "x": 27.198442459106445,
+                    "y": 40.0
+                }
+            },
+            "1": {
+                "battery_level": 0,
+                "location": {
+                    "x": -5.0,
+                    "y": 0.0
+                }
+            },
+            "2": {
+                "battery_level": 0,
+                "location": {
+                    "x": 0.0,
+                    "y": 5.0
+                }
+            },
+            "3": {
+                "battery_level": 0,
+                "location": {
+                    "x": 0.0,
+                    "y": -5.0
+                }
+            }
+        },
+        "tasks": {
+            "1": {
+                "intensity": 194
+            },
+            "2": {
+                "intensity": 215
+            }
+        }
+    },
+    "200": {
+        "robots": {
+            "0": {
+                "battery_level": 59,
+                "location": {
+                    "x": 31.82054328918457,
+                    "y": 30.652050018310547
+                }
+            },
+            "1": {
+                "battery_level": 0,
+                "location": {
+                    "x": -5.0,
+                    "y": 0.0
+                }
+            },
+            "2": {
+                "battery_level": 0,
+                "location": {
+                    "x": 0.0,
+                    "y": 5.0
+                }
+            },
+            "3": {
+                "battery_level": 0,
+                "location": {
+                    "x": 0.0,
+                    "y": -5.0
+                }
+            }
+        },
+        "tasks": {
+            "1": {
+                "intensity": 178
+            },
+            "2": {
+                "intensity": 199
+            }
+        }
+    },
+    "2000": {
+        "robots": {
+            "0": {
+                "battery_level": 17,
+                "location": {
+                    "x": 40.197452545166016,
+                    "y": 40.0
+                }
+            },
+            "1": {
+                "battery_level": 0,
+                "location": {
+                    "x": -5.0,
+                    "y": 0.0
+                }
+            },
+            "2": {
+                "battery_level": 0,
+                "location": {
+                    "x": 0.0,
+                    "y": 5.0
+                }
+            },
+            "3": {
+                "battery_level": 0,
+                "location": {
+                    "x": 0.0,
+                    "y": -5.0
+                }
+            }
+        },
+        "tasks": {
+            "1": {
+                "intensity": 196
+            },
+            "2": {
+                "intensity": 217
+            }
+        }
+    },
+    "2200": {
+        "robots": {
+            "0": {
+                "battery_level": 19,
+                "location": {
+                    "x": 39.99749755859375,
+                    "y": 40.0
+                }
+            },
+            "1": {
+                "battery_level": 0,
+                "location": {
+                    "x": -5.0,
+                    "y": 0.0
+                }
+            },
+            "2": {
+                "battery_level": 0,
+                "location": {
+                    "x": 0.0,
+                    "y": 5.0
+                }
+            },
+            "3": {
+                "battery_level": 0,
+                "location": {
+                    "x": 0.0,
+                    "y": -5.0
+                }
+            }
+        },
+        "tasks": {
+            "1": {
+                "intensity": 198
+            },
+            "2": {
+                "intensity": 219
+            }
+        }
+    },
+    "2400": {
+        "robots": {
+            "0": {
+                "battery_level": 21,
+                "location": {
+                    "x": 40.00001907348633,
+                    "y": 40.0
+                }
+            },
+            "1": {
+                "battery_level": 0,
+                "location": {
+                    "x": -5.0,
+                    "y": 0.0
+                }
+            },
+            "2": {
+                "battery_level": 0,
+                "location": {
+                    "x": 0.0,
+                    "y": 5.0
+                }
+            },
+            "3": {
+                "battery_level": 0,
+                "location": {
+                    "x": 0.0,
+                    "y": -5.0
+                }
+            }
+        },
+        "tasks": {
+            "1": {
+                "intensity": 200
+            },
+            "2": {
+                "intensity": 221
+            }
+        }
+    },
+    "2600": {
+        "robots": {
+            "0": {
+                "battery_level": 23,
+                "location": {
+                    "x": 40.0,
+                    "y": 40.0
+                }
+            },
+            "1": {
+                "battery_level": 0,
+                "location": {
+                    "x": -5.0,
+                    "y": 0.0
+                }
+            },
+            "2": {
+                "battery_level": 0,
+                "location": {
+                    "x": 0.0,
+                    "y": 5.0
+                }
+            },
+            "3": {
+                "battery_level": 0,
+                "location": {
+                    "x": 0.0,
+                    "y": -5.0
+                }
+            }
+        },
+        "tasks": {
+            "1": {
+                "intensity": 202
+            },
+            "2": {
+                "intensity": 223
+            }
+        }
+    },
+    "400": {
+        "robots": {
+            "0": {
+                "battery_level": 55,
+                "location": {
+                    "x": 40.128448486328125,
+                    "y": 40.14680099487305
+                }
+            },
+            "1": {
+                "battery_level": 0,
+                "location": {
+                    "x": -5.0,
+                    "y": 0.0
+                }
+            },
+            "2": {
+                "battery_level": 0,
+                "location": {
+                    "x": 0.0,
+                    "y": 5.0
+                }
+            },
+            "3": {
+                "battery_level": 0,
+                "location": {
+                    "x": 0.0,
+                    "y": -5.0
+                }
+            }
+        },
+        "tasks": {
+            "1": {
+                "intensity": 180
+            },
+            "2": {
+                "intensity": 201
+            }
+        }
+    },
+    "600": {
+        "robots": {
+            "0": {
+                "battery_level": 57,
+                "location": {
+                    "x": 39.99832534790039,
+                    "y": 39.998085021972656
+                }
+            },
+            "1": {
+                "battery_level": 0,
+                "location": {
+                    "x": -5.0,
+                    "y": 0.0
+                }
+            },
+            "2": {
+                "battery_level": 0,
+                "location": {
+                    "x": 0.0,
+                    "y": 5.0
+                }
+            },
+            "3": {
+                "battery_level": 0,
+                "location": {
+                    "x": 0.0,
+                    "y": -5.0
+                }
+            }
+        },
+        "tasks": {
+            "1": {
+                "intensity": 182
+            },
+            "2": {
+                "intensity": 203
+            }
+        }
+    },
+    "800": {
+        "robots": {
+            "0": {
+                "battery_level": 59,
+                "location": {
+                    "x": 40.00001525878906,
+                    "y": 40.00001525878906
+                }
+            },
+            "1": {
+                "battery_level": 0,
+                "location": {
+                    "x": -5.0,
+                    "y": 0.0
+                }
+            },
+            "2": {
+                "battery_level": 0,
+                "location": {
+                    "x": 0.0,
+                    "y": 5.0
+                }
+            },
+            "3": {
+                "battery_level": 0,
+                "location": {
+                    "x": 0.0,
+                    "y": -5.0
+                }
+            }
+        },
+        "tasks": {
+            "1": {
+                "intensity": 184
+            },
+            "2": {
+                "intensity": 205
+            }
+        }
+    }
+}

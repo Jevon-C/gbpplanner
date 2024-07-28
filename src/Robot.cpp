@@ -146,6 +146,11 @@ int Robot::getDecrementInterval() const { return decrement_interval_; }
 
 int Robot::getBatteryLevel() const { return battery_level_; }
 
+Eigen::Vector2f Robot::getPosition() const
+{
+    return Eigen::Vector2f(position_.x(), position_.y());
+}
+
 bool Robot::isWithinProximity(const Eigen::Vector2f &task_location) const
 {
     // Define your proximity check logic here, e.g., within a certain distance
@@ -182,11 +187,13 @@ void Robot::incrementBattery(int amount)
     writeBatteryToJSON();
 }
 
-void Robot::setCharging(bool charging) {
+void Robot::setCharging(bool charging)
+{
     charging_ = charging;
 }
 
-bool Robot::isCharging() const {
+bool Robot::isCharging() const
+{
     return charging_;
 }
 
@@ -295,8 +302,8 @@ void Robot::updateCurrent()
     // Real pose update
     position_ = position_ + increment; // Update the position of the robot - this essentially is used to move the position of the robot in the simulation
 
-    // Update the JSON file with the new position if real_time_updates is true
-    if (globals.real_time_updates)
+    // Update the JSON file with the new position if real_time_updates is true and at specified intervals
+    if (globals.real_time_updates && sim_->clock_ % globals.location_update_interval == 0)
     {
         std::ifstream infile("../config/robot_information_centre.json");
         if (!infile.is_open())

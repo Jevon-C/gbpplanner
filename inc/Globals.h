@@ -62,7 +62,9 @@ public:
 
     // New parameter for real-time updates
     bool real_time_updates = false;
+    int location_update_interval; // Interval for updating the location of the robots
     int RIC_UPDATE_INTERVAL = 100; // Interval for updating the RIC
+    int temporal_history_interval = 100; // Interval for updating the temporal history
 
     Globals();
     int parse_global_args(DArgs::DArgs &dargs);
