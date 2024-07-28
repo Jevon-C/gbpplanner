@@ -44,6 +44,8 @@ public:
     int getCapacity() const;
     int getDecrementInterval() const;
     int getBatteryLevel() const;
+    void setCharging(bool charging);
+    bool isCharging() const;
 
     nlohmann::json toJSON() const;
 
@@ -75,4 +77,5 @@ public:
 
 private:
     int num_variables_;
+    bool charging_; // Add this member variable
 };

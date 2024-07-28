@@ -155,8 +155,8 @@ bool Robot::isWithinProximity(const Eigen::Vector2f &task_location) const
 
 void Robot::decrementBattery()
 {
-    if (battery_level_ > 0)
-    {
+    if (!charging_ && battery_level_ > 0)
+    { // Check if the robot is not charging
         battery_level_ -= battery_decrement_;
         if (battery_level_ < 0)
         {
@@ -172,9 +172,22 @@ void Robot::decrementBattery()
     }
 }
 
-void Robot::incrementBattery(int amount) {
+void Robot::incrementBattery(int amount)
+{
     battery_level_ += amount;
+    if (battery_level_ > 100)
+    {
+        battery_level_ = 100; // Ensure the battery level does not go above 100
+    }
     writeBatteryToJSON();
+}
+
+void Robot::setCharging(bool charging) {
+    charging_ = charging;
+}
+
+bool Robot::isCharging() const {
+    return charging_;
 }
 
 void Robot::writeBatteryToJSON()

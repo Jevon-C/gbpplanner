@@ -198,19 +198,19 @@ void Simulator::checkAndDecrementTaskIntensity()
         task.setBeingDecremented(false); // Reset the flag at the beginning of each check
     }
 
-    // Set the flag for tasks that are within proximity of assigned robots
+    // Set the flag for tasks that are within proximity of assigned robots with sufficient battery
     for (auto &[rid, robot] : robots_)
     {
         for (auto &task : tasks_)
         {
-            if (robot->isWithinProximity(task.getLocation()) && robot->getAssignedTask() == task.getId())
+            if (robot->isWithinProximity(task.getLocation()) && robot->getAssignedTask() == task.getId() && robot->getBatteryLevel() > 0)
             {
                 task.setBeingDecremented(true);
             }
         }
     }
 
-    // Decrement the intensity for tasks being interacted with by robots
+    // Decrement the intensity for tasks being interacted with by robots with sufficient battery
     for (auto &[rid, robot] : robots_)
     {
         for (auto &task : tasks_)
@@ -235,17 +235,21 @@ void Simulator::checkAndChargeRobots()
 {
     for (auto &[rid, robot] : robots_)
     {
+        bool isCharging = false;
         for (const auto &station : charging_stations_)
         {
             if (robot->isWithinProximity(station.getLocation()))
             {
+                isCharging = true;
                 if (clock_ % station.getChargeRateInterval() == 0)
                 {
                     robot->incrementBattery(station.getChargeIncrement());
                     std::cout << "Robot ID: " << robot->getId() << " Battery incremented to: " << robot->getBatteryLevel() << std::endl;
                 }
+                break;
             }
         }
+        robot->setCharging(isCharging); // Set charging status based on proximity to a charging station
     }
 }
 
@@ -369,7 +373,7 @@ void Simulator::timestep()
     checkAndDecrementTaskIntensity();
 
     // Check proximity of robots to charging stations and increment battery level accordingly
-    checkAndChargeRobots();
+    checkAndChargeRobots(); // Add this call
 
     // Update RIC at the specified intervals
     updateRIC();
