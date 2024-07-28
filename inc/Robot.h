@@ -1,27 +1,31 @@
-/**************************************************************************************/
-// Copyright (c) 2023 Aalok Patwardhan (a.patwardhan21@imperial.ac.uk)
-// This code is licensed (see LICENSE for details)
-/**************************************************************************************/
 #pragma once
+
 #include <deque>
 #include <Eigen/Dense>
-#include <GBP/Variable.h>
-#include <GBP/FactorGraph.h>
-#include <GBP/Factor.h>
+#include <gbp/Variable.h>
+#include <gbp/GBPCore.h>
+#include <gbp/Factor.h>
+#include <gbp/FactorGraph.h> // Ensure this include is present and correct
 #include <raylib.h>
-#include "Simulator.h"
 #include "json.hpp"
+#include <memory>
+#include <vector>
+#include <Utils.h>
 
-class Robot : public FactorGraph
+// Forward declaration of Simulator to avoid circular dependency
+class Simulator;
+
+class Robot : public FactorGraph // Ensure FactorGraph is defined before this point
 {
 public:
-    Robot(Simulator *sim,
-          int rid,
-          std::deque<Eigen::VectorXd> waypoints,
-          float size,
-          Color color);
+    // Constructors and Destructor
+    Robot(Simulator *sim, int rid, std::deque<Eigen::VectorXd> waypoints, float size, Color color);
+    Robot(Simulator *sim, int rid, std::string entity_type, float x, float y, float x_dot, float y_dot,
+          int battery_level, int battery_decrement, int decrement_interval, int assigned_task,
+          int capacity, int capacity_interval);
     ~Robot();
 
+    // Member functions
     void updateCurrent();
     void updateHorizon();
     void updateInterrobotFactors();
@@ -29,21 +33,37 @@ public:
     void deleteInterrobotFactors(std::shared_ptr<Robot> other_robot);
     void draw();
     std::vector<int> getVariableTimesteps(int lookahead_horizon, int lookahead_multiple);
-    void decrementBattery(); // Method to decrement battery level
-    void writeBatteryToJSON(); // Method to write battery level to JSON
+    void decrementBattery();
+    void writeBatteryToJSON();
+    bool isWithinProximity(const Eigen::Vector2f &task_location) const;
+    int getAssignedTask() const;
+    int getCapacityInterval() const;
+    int getCapacity() const;
+    int getDecrementInterval() const;
+    int getBatteryLevel() const;
 
+    nlohmann::json toJSON() const;
+
+    // Member variables
     Eigen::VectorXd position_; // Real position
+    Eigen::VectorXd velocity_; // Velocity vector
     float height_3D_;
     float robot_radius_;
     std::deque<Eigen::VectorXd> waypoints_;
     Color color_;
-    Simulator *sim_;
+    Simulator *sim_; // Pointer to Simulator instance
     int rid_;
+    std::string entity_type_; // Entity type of the robot
 
     // Battery variables
-    int battery_level;
-    int battery_decrement;
-    int decrement_interval;
+    int battery_level_;
+    int battery_decrement_;
+    int decrement_interval_;
+
+    // Task and capacity variables
+    int assigned_task_;
+    int capacity_;
+    int capacity_interval_;
 
     // Inter-robot communication
     bool interrobot_comms_active_ = true;

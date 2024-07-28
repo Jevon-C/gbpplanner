@@ -7,13 +7,10 @@
 #define RLIGHTS_IMPLEMENTATION // needed to be defined once for the lights shader
 #include <iostream>
 #include <Utils.h>
-
 #include <DArgs.h>
-
 #include <Globals.h>
 #include <Simulator.h>
 
-Globals globals;
 int main(int argc, char *argv[]){
     
     srand((int)globals.SEED);                                   // Initialise random seed   

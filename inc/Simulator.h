@@ -7,6 +7,7 @@
 #include <gbp/GBPCore.h>
 #include <Graphics.h>
 #include <gbp/Variable.h>
+#include <gbp/FactorGraph.h>
 #include <nanoflann.h>
 #include <raylib.h>
 #include <rlights.h>
@@ -14,6 +15,9 @@
 #include <random>
 #include <string>
 #include <vector>
+#include "Task.h"
+#include "json.hpp"  // Added to ensure JSON support
+#include <iostream>  // Added for error logging
 
 class Robot;
 class Graphics;
@@ -32,7 +36,7 @@ public:
     Simulator();
     ~Simulator();
 
-    // Pointer to Graphics class which hold all the camera, graphics and models for display
+    // Pointer to Graphics class which holds all the camera, graphics, and models for display
     Graphics *graphics;
 
     // kd-tree to store the positions of the robots at each timestep.
@@ -44,27 +48,28 @@ public:
     // Image representing the obstacles in the environment
     Image obstacleImg;
 
-    int next_rid_ = 0;                             // New robots will use this rid. It should be ++ incremented when this happens
-    int next_vid_ = 0;                             // New variables will use this vid. It should be ++ incremented when this happens
-    int next_fid_ = 0;                             // New factors will use this fid. It should be ++ incremented when this happens
-    uint32_t clock_ = 0;                           // Simulation clock (timesteps)
-    std::map<int, std::shared_ptr<Robot>> robots_; // Map containing smart pointers to all robots, accessed by their rid.
-    bool new_robots_needed_ = true;                // Whether or not to create new robots. (Some formations are dynamicaly changing)
-    bool symmetric_factors = false;                // If true, when inter-robot factors need to be created between two robots,
-                                                   // a pair of factors is created (one belonging to each robot). This becomes a redundancy.
-
-    // Task structure to store task information
-    struct Task
-    {
-        std::string description;
-        Vector2 location;
-    };
-
-    // Data structure to store tasks
-    std::vector<Task> tasks_;
+    int next_rid_ = 0;              // New robots will use this rid. It should be ++ incremented when this happens
+    int next_vid_ = 0;              // New variables will use this vid. It should be ++ incremented when this happens
+    int next_fid_ = 0;              // New factors will use this fid. It should be ++ incremented when this happens
+    uint32_t clock_ = 0;            // Simulation clock (timesteps)
+    bool new_robots_needed_ = true; // Whether or not to create new robots. (Some formations are dynamically changing)
+    bool symmetric_factors = false; // If true, when inter-robot factors need to be created between two robots,
+                                    // a pair of factors is created (one belonging to each robot). This becomes a redundancy.
 
     // Function to load tasks from JSON file
     void loadTasks(const std::string &filePath);
+
+    // Function to load robots from JSON file
+    void loadRobots(const std::string &filePath);
+
+    // Function to increment the intensity of tasks at their respective intervals
+    void incrementTaskIntensity();
+
+    // Function to check proximity of robots to tasks and decrement task intensity accordingly
+    void checkAndDecrementTaskIntensity();
+
+    // Function to save the current state of tasks and robots to JSON files
+    void saveStateToJSON();
 
     /*******************************************************************************/
     // Create new robots if needed. Handles deletion of robots out of bounds.
@@ -134,4 +139,10 @@ public:
     {
         return std::uniform_int_distribution<int>(lower, upper)(gen_uniform_int);
     }
+
+    std::map<int, std::shared_ptr<Robot>>& getRobots() { return robots_; } // Getter function for robots_
+
+private:
+    std::vector<Task> tasks_;                      // Ensure the Task class is defined and included properly
+    std::map<int, std::shared_ptr<Robot>> robots_; // Map containing smart pointers to all robots, accessed by their rid.
 };

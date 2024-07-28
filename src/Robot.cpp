@@ -1,32 +1,21 @@
-/**************************************************************************************/
-// Copyright (c) 2023 Aalok Patwardhan (a.patwardhan21@imperial.ac.uk)
-// This code is licensed (see LICENSE for details)
-/**************************************************************************************/
-#include <Robot.h>
+#include "Robot.h"
+#include "Simulator.h" // Ensure Simulator.h is included here
 #include "json.hpp"
 #include <iostream>
 #include <fstream>
+#include <random> // Include random for std::random_device and std::mt19937
 
-/***************************************************************************/
-// Creates a robot. Inputs required are :
-//      - Pointer to the simulator
-//      - A robot id rid (should be taken from simulator->next_rid_++),
-//      - A dequeue of waypoints (which are 4 dimensional [x,y,xdot,ydot])
-//      - Robot radius
-//      - Colour
-/***************************************************************************/
 Robot::Robot(Simulator *sim,
              int rid,
              std::deque<Eigen::VectorXd> waypoints,
              float size,
-             Color color) : FactorGraph{rid},
-                            sim_(sim), rid_(rid),
-                            waypoints_(waypoints),
-                            robot_radius_(size), color_(color)
+             Color color)
+    : FactorGraph{rid}, sim_(sim), rid_(rid), waypoints_(waypoints),
+      robot_radius_(size), color_(color)
 {
-    height_3D_ = robot_radius_; // Height out of plane for 3d visualisation only
+    height_3D_ = robot_radius_; // Height out of plane for 3d visualization only
 
-    // Battery level and decrement initialization
+    // Battery level and other attributes initialization
     std::ifstream infile("../config/robot_information_centre.json");
     if (infile.is_open())
     {
@@ -37,9 +26,12 @@ Robot::Robot(Simulator *sim,
         std::string rid_str = std::to_string(rid_);
         if (j["robots"].contains(rid_str))
         {
-            battery_level = j["robots"][rid_str]["battery_level"];
-            battery_decrement = j["robots"][rid_str]["battery_decrement"];
-            decrement_interval = j["robots"][rid_str]["decrement_interval"];
+            battery_level_ = j["robots"][rid_str]["battery_level"];
+            battery_decrement_ = j["robots"][rid_str]["battery_decrement"];
+            decrement_interval_ = j["robots"][rid_str]["decrement_interval"];
+            assigned_task_ = j["robots"][rid_str]["assigned_task"];
+            capacity_ = j["robots"][rid_str]["capacity"];
+            capacity_interval_ = j["robots"][rid_str]["capacity_interval"];
         }
         else
         {
@@ -47,50 +39,45 @@ Robot::Robot(Simulator *sim,
             std::random_device rd;
             std::mt19937 gen(rd());
             std::uniform_int_distribution<> dis(0, 3);
-            battery_level = std::vector<int>{90, 80, 70, 60}[dis(gen)];
-            battery_decrement = 5;
-            decrement_interval = 100;
+            battery_level_ = std::vector<int>{90, 80, 70, 60}[dis(gen)];
+            battery_decrement_ = 5;
+            decrement_interval_ = 1000;
+            assigned_task_ = 0;
+            capacity_ = 1;
+            capacity_interval_ = 100;
         }
     }
     else
     {
         // Handle the case where the file could not be opened
-        std::cerr << "Error opening config file for battery initialization." << std::endl;
-        // Assign random battery level and default values if file cannot be opened
+        std::cerr << "Error opening config file for initialization." << std::endl;
+        // Assign default values
         std::random_device rd;
         std::mt19937 gen(rd());
         std::uniform_int_distribution<> dis(0, 3);
-        battery_level = std::vector<int>{90, 80, 70, 60}[dis(gen)];
-        battery_decrement = 5;
-        decrement_interval = 100;
+        battery_level_ = std::vector<int>{90, 80, 70, 60}[dis(gen)];
+        battery_decrement_ = 5;
+        decrement_interval_ = 1000;
+        assigned_task_ = 0;
+        capacity_ = 1;
+        capacity_interval_ = 100;
     }
 
     // Robot will always set its horizon state to move towards the next waypoint.
     // Once this waypoint has been reached, it pops it from the waypoints
     Eigen::VectorXd start = position_ = waypoints_[0];           // Assigns the first elements of the waypoints queue to start and position
     waypoints_.pop_front();                                      // Remove the first waypoint from the queue
-    auto goal = (waypoints_.size() > 0) ? waypoints_[0] : start; // If there are no waypoints, the goal is the start position  - This ensures that the goal is either the next waypoint or the start position if there are no waypoints left.
+    auto goal = (waypoints_.size() > 0) ? waypoints_[0] : start; // If there are no waypoints, the goal is the start position
 
-    // Initialise the horzion in the direction of the goal, at a distance T_HORIZON * MAX_SPEED from the start.
+    // Initialize the horizon in the direction of the goal, at a distance T_HORIZON * MAX_SPEED from the start.
     Eigen::VectorXd start2goal = goal - start; // Calculate the vector from the start to the goal
-    Eigen::VectorXd horizon = start + std::min(start2goal.norm(), 1. * globals.T_HORIZON * globals.MAX_SPEED) * start2goal.normalized();
-
-    /*
-    - start2goal.norm() gives the distance between start and goal
-    - globals.T_HORIZON * globals.MAX_SPEED is the maximum distance the robot can travel in the given horizon time
-    - std::min(start2goal.norm(), 1. * globals.T_HORIZON * globals.MAX_SPEED) ensures that the distance to the horizon does not exceed the maximum distance the robot can travel within the horizon time.
-    - start2goal.normalized() gives the unit vector in the direction of start2goal
-    - The horizon is then calculated as the position start plus the limited distance in the direction of start2goal
-    */
+    Eigen::VectorXd horizon = start + std::min(start2goal.norm(), 1.0 * globals.T_HORIZON * globals.MAX_SPEED) * start2goal.normalized();
 
     // Variables representing the planned path are at timesteps which increase in spacing.
-    // eg. (so that a span of 10 timesteps as a planning horizon can be represented by much fewer variables)
     std::vector<int> variable_timesteps = getVariableTimesteps(globals.T_HORIZON / globals.T0, globals.LOOKAHEAD_MULTIPLE);
     num_variables_ = variable_timesteps.size(); // Number of variables that will be used to represent the planned path
 
-    /***************************************************************************/
-    /* Create Variables with fixed pose priors on start and horizon variables. */
-    /***************************************************************************/
+    // Create Variables with fixed pose priors on start and horizon variables.
     Color var_color = color_;
     double sigma;
     int n = globals.N_DOFS;
@@ -100,7 +87,7 @@ Robot::Robot(Simulator *sim,
     {
         // Set initial mu and covariance of variable interpolated between start and horizon
         mu = start + (horizon - start) * (float)(variable_timesteps[i] / (float)variable_timesteps.back());
-        // Start and Horizon state variables should be 'fixed' during optimisation at a timestep
+        // Start and Horizon state variables should be 'fixed' during optimization at a timestep
         sigma = (i == 0 || i == num_variables_ - 1) ? globals.SIGMA_POSE_FIXED : 0.;
         sigma_list.setConstant(sigma);
 
@@ -109,9 +96,7 @@ Robot::Robot(Simulator *sim,
         variables_[variable->key_] = variable;
     }
 
-    /***************************************************************************/
-    /* Create Dynamics factors between variables */
-    /***************************************************************************/
+    // Create Dynamics factors between variables
     for (int i = 0; i < num_variables_ - 1; i++)
     {
         // T0 is the timestep between the current state and the first planned state.
@@ -125,9 +110,7 @@ Robot::Robot(Simulator *sim,
         factors_[factor->key_] = factor;
     }
 
-    /***************************************************************************/
     // Create Obstacle factors for all variables excluding start, excluding horizon
-    /***************************************************************************/
     for (int i = 1; i < num_variables_ - 1; i++)
     {
         std::vector<std::shared_ptr<Variable>> variables{getVar(i)};
@@ -138,14 +121,108 @@ Robot::Robot(Simulator *sim,
             var->add_factor(fac_obs);
         this->factors_[fac_obs->key_] = fac_obs;
     }
-};
+}
+
+Robot::Robot(Simulator *sim, int rid, std::string entity_type, float x, float y, float x_dot, float y_dot,
+             int battery_level, int battery_decrement, int decrement_interval, int assigned_task,
+             int capacity, int capacity_interval)
+    : FactorGraph{rid}, sim_(sim), rid_(rid), entity_type_(entity_type),
+      position_(Eigen::VectorXd::Zero(2)), velocity_(Eigen::VectorXd::Zero(2)),
+      battery_level_(battery_level), battery_decrement_(battery_decrement),
+      decrement_interval_(decrement_interval), assigned_task_(assigned_task),
+      capacity_(capacity), capacity_interval_(capacity_interval)
+{
+    position_ << x, y;
+    velocity_ << x_dot, y_dot;
+}
+
+int Robot::getAssignedTask() const { return assigned_task_; }
+
+int Robot::getCapacityInterval() const { return capacity_interval_; }
+
+int Robot::getCapacity() const { return capacity_; }
+
+int Robot::getDecrementInterval() const { return decrement_interval_; }
+
+int Robot::getBatteryLevel() const { return battery_level_; }
+
+bool Robot::isWithinProximity(const Eigen::Vector2f &task_location) const
+{
+    // Define your proximity check logic here, e.g., within a certain distance
+    float distance = (position_.head<2>() - task_location.cast<double>()).norm();
+    return distance < 1.0;
+}
+
+void Robot::decrementBattery()
+{
+    if (battery_level_ > 0)
+    {
+        battery_level_ -= battery_decrement_;
+        if (battery_level_ < 0)
+        {
+            battery_level_ = 0; // Ensure battery level doesn't go negative
+        }
+    }
+    writeBatteryToJSON();
+}
+
+void Robot::writeBatteryToJSON()
+{
+    std::ifstream infile("../config/robot_information_centre.json");
+    if (!infile.is_open())
+    {
+        std::cerr << "Error opening config file." << std::endl;
+        return;
+    }
+
+    nlohmann::json j;
+    infile >> j;
+    infile.close();
+
+    std::string rid_str = std::to_string(rid_);
+    if (j["robots"].contains(rid_str))
+    {
+        j["robots"][rid_str]["battery_level"] = battery_level_;
+    }
+    else
+    {
+        std::cerr << "Error: Robot ID " << rid_str << " not found in JSON." << std::endl;
+        return;
+    }
+
+    std::ofstream outfile("../config/robot_information_centre.json");
+    if (!outfile.is_open())
+    {
+        std::cerr << "Error opening config file for writing." << std::endl;
+        return;
+    }
+
+    outfile << std::setw(4) << j << std::endl;
+    outfile.close();
+}
+
+nlohmann::json Robot::toJSON() const
+{
+    nlohmann::json j;
+    j["id"] = rid_;
+    j["entity_type"] = entity_type_;
+    j["location"]["x"] = position_.x();
+    j["location"]["y"] = position_.y();
+    j["location"]["x_dot"] = velocity_.x();
+    j["location"]["y_dot"] = velocity_.y();
+    j["battery_level"] = battery_level_;
+    j["battery_decrement"] = battery_decrement_;
+    j["decrement_interval"] = decrement_interval_;
+    j["assigned_task"] = assigned_task_;
+    j["capacity"] = capacity_;
+    j["capacity_interval"] = capacity_interval_;
+    return j;
+}
 
 /***************************************************************************************************/
 /* Destructor */
 /***************************************************************************************************/
-Robot::~Robot()
-{
-}
+Robot::~Robot() {}
 
 /***************************************************************************************************/
 /* Change the prior of the Current state */
@@ -345,7 +422,7 @@ void Robot::createInterrobotFactors(std::shared_ptr<Robot> other_robot)
 
     // Add the other robot to this robot's list of connected robots.
     this->connected_r_ids_.push_back(other_robot->rid_);
-};
+}
 
 /***************************************************************************************************/
 /* Delete interrobot factors between the two robots */
@@ -374,7 +451,7 @@ void Robot::deleteInterrobotFactors(std::shared_ptr<Robot> other_robot)
     {
         connected_r_ids_.erase(it);
     }
-};
+}
 
 /***************************************************************************************************/
 // Drawing functions for the robot.
@@ -419,7 +496,7 @@ void Robot::draw()
     }
     // Draw the actual position of the robot. This uses the robotModel defined in Graphics.cpp, others can be used.
     DrawModel(sim_->graphics->robotModel_, Vector3{(float)position_(0), height_3D_, (float)position_(1)}, robot_radius_, col);
-};
+}
 
 /*******************************************************************************************/
 // Function for determining the timesteps at which variables in the planned path are placed.
@@ -452,55 +529,4 @@ std::vector<int> Robot::getVariableTimesteps(int lookahead_horizon, int lookahea
     }
 
     return var_list;
-};
-
-/*******************************************************************************/
-// Decrease the battery level of the robot
-/*******************************************************************************/
-void Robot::decrementBattery()
-{
-    if (battery_level > 0)
-    {
-        battery_level -= battery_decrement;
-        if (battery_level < 0)
-        {
-            battery_level = 0; // Ensure battery level doesn't go negative
-        }
-    }
-    writeBatteryToJSON();
-};
-
-void Robot::writeBatteryToJSON()
-{
-    std::ifstream infile("../config/robot_information_centre.json");
-    if (!infile.is_open())
-    {
-        std::cerr << "Error opening config file." << std::endl;
-        return;
-    }
-
-    nlohmann::json j;
-    infile >> j;
-    infile.close();
-
-    std::string rid_str = std::to_string(rid_);
-    if (j["robots"].contains(rid_str))
-    {
-        j["robots"][rid_str]["battery_level"] = battery_level;
-    }
-    else
-    {
-        std::cerr << "Error: Robot ID " << rid_str << " not found in JSON." << std::endl;
-        return;
-    }
-
-    std::ofstream outfile("../config/robot_information_centre.json");
-    if (!outfile.is_open())
-    {
-        std::cerr << "Error opening config file for writing." << std::endl;
-        return;
-    }
-
-    outfile << std::setw(4) << j << std::endl;
-    outfile.close();
 };

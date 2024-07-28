@@ -1,104 +1,116 @@
 {
     "robots": {
         "0": {
-            "id": 0,
+            "assigned_task": 0,
+            "battery_decrement": 5,
+            "battery_level": 75,
+            "capacity": 1,
+            "capacity_interval": 100,
+            "decrement_interval": 100,
+            "ending_waypoint": {
+                "x": 5,
+                "x_dot": 0,
+                "y": 0,
+                "y_dot": 0
+            },
             "entity_type": "fire truck",
+            "id": 0,
             "location": {
                 "x": 5,
-                "y": 0,
                 "x_dot": 0,
+                "y": 0,
                 "y_dot": 0
             },
             "starting_waypoint": {
                 "x": 5,
-                "y": 0,
                 "x_dot": 0,
-                "y_dot": 0
-            },
-            "ending_waypoint": {
-                "x": 5,
                 "y": 0,
-                "x_dot": 0,
                 "y_dot": 0
-            },
-            "battery_level": 90,
-            "battery_decrement": 5,
-            "decrement_interval": 100
+            }
         },
         "1": {
-            "id": 1,
+            "assigned_task": 0,
+            "battery_decrement": 5,
+            "battery_level": 65,
+            "capacity": 1,
+            "capacity_interval": 100,
+            "decrement_interval": 100,
+            "ending_waypoint": {
+                "x": -5,
+                "x_dot": 0,
+                "y": 0,
+                "y_dot": 0
+            },
             "entity_type": "police car",
+            "id": 1,
             "location": {
                 "x": -5,
-                "y": 0,
                 "x_dot": 0,
+                "y": 0,
                 "y_dot": 0
             },
             "starting_waypoint": {
                 "x": -5,
-                "y": 0,
                 "x_dot": 0,
-                "y_dot": 0
-            },
-            "ending_waypoint": {
-                "x": -5,
                 "y": 0,
-                "x_dot": 0,
                 "y_dot": 0
-            },
-            "battery_level": 80,
-            "battery_decrement": 5,
-            "decrement_interval": 100
+            }
         },
         "2": {
-            "id": 2,
+            "assigned_task": 0,
+            "battery_decrement": 5,
+            "battery_level": 55,
+            "capacity": 1,
+            "capacity_interval": 100,
+            "decrement_interval": 1000,
+            "ending_waypoint": {
+                "x": 0,
+                "x_dot": 0,
+                "y": 5,
+                "y_dot": 0
+            },
             "entity_type": "ambulance",
+            "id": 2,
             "location": {
                 "x": 0,
-                "y": 5,
                 "x_dot": 0,
+                "y": 5,
                 "y_dot": 0
             },
             "starting_waypoint": {
                 "x": 0,
-                "y": 5,
                 "x_dot": 0,
-                "y_dot": 0
-            },
-            "ending_waypoint": {
-                "x": 0,
                 "y": 5,
-                "x_dot": 0,
                 "y_dot": 0
-            },
-            "battery_level": 70,
-            "battery_decrement": 5,
-            "decrement_interval": 100
+            }
         },
         "3": {
-            "id": 3,
+            "assigned_task": 0,
+            "battery_decrement": 5,
+            "battery_level": 45,
+            "capacity": 1,
+            "capacity_interval": 100,
+            "decrement_interval": 1000,
+            "ending_waypoint": {
+                "x": 0,
+                "x_dot": 0,
+                "y": -5,
+                "y_dot": 0
+            },
             "entity_type": "fire truck",
+            "id": 3,
             "location": {
                 "x": 0,
-                "y": -5,
                 "x_dot": 0,
+                "y": -5,
                 "y_dot": 0
             },
             "starting_waypoint": {
                 "x": 0,
-                "y": -5,
                 "x_dot": 0,
-                "y_dot": 0
-            },
-            "ending_waypoint": {
-                "x": 0,
                 "y": -5,
-                "x_dot": 0,
                 "y_dot": 0
-            },
-            "battery_level": 60,
-            "battery_decrement": 5,
-            "decrement_interval": 100
+            }
         }
     }
 }

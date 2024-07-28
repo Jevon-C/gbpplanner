@@ -6,7 +6,10 @@
             "location": {
                 "x": 0,
                 "y": 25
-            }
+            },
+            "intensity": 10,
+            "task_intensity_increment": 1,
+            "increment_interval": 100
         },
         "2": {
             "id": 2,
@@ -14,7 +17,10 @@
             "location": {
                 "x": 25,
                 "y": 25
-            }
+            },
+            "intensity": 10,
+            "task_intensity_increment": 1,
+            "increment_interval": 100
         }
     }
 }

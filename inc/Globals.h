@@ -1,7 +1,3 @@
-/**************************************************************************************/
-// Copyright (c) 2023 Aalok Patwardhan (a.patwardhan21@imperial.ac.uk)
-// This code is licensed (see LICENSE for details)
-/**************************************************************************************/
 #pragma once
 #include <cmath>
 #include <raylib.h>
@@ -73,3 +69,6 @@ public:
     void parse_global_args(std::ifstream &config_file);
     void post_parsing();
 };
+
+// Declare the globals instance
+extern Globals globals;

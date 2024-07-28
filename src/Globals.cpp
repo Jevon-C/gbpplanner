@@ -2,9 +2,12 @@
 // Copyright (c) 2023 Aalok Patwardhan (a.patwardhan21@imperial.ac.uk)
 // This code is licensed (see LICENSE for details)
 /**************************************************************************************/
-#include <Globals.h>
+#include "Globals.h"
 #include <Utils.h>
 #include "json.hpp"
+
+// Define the globals instance
+Globals globals;
 
 /*****************************************************************/
 // Simply reads the appropriate sections from the config.json
@@ -87,4 +90,4 @@ void Globals::post_parsing()
         print("Capping MAX_SPEED parameter at ", MAX_SPEED);
     }
     T0 = ROBOT_RADIUS / 2.f / MAX_SPEED; // Time between current state and next state of planned path
-}
+};

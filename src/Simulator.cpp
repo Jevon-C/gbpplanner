@@ -1,11 +1,11 @@
-#include <iostream>
+#include "Simulator.h"
 #include <fstream>
+#include "json.hpp"
+#include <iostream>
 #include <gbp/GBPCore.h>
-#include <Simulator.h>
 #include <Graphics.h>
 #include <Robot.h>
 #include <nanoflann.h>
-#include "json.hpp"
 
 using json = nlohmann::json;
 
@@ -33,7 +33,7 @@ Simulator::Simulator()
     if (obstacleImg.width == 0)
         obstacleImg = GenImageColor(globals.WORLD_SZ, globals.WORLD_SZ, WHITE);
 
-    // However for calculation purposes the image needs to be inverted.
+    // However, for calculation purposes the image needs to be inverted.
     ImageColorInvert(&obstacleImg);
     graphics = new Graphics(obstacleImg);
 }
@@ -84,8 +84,120 @@ void Simulator::loadTasks(const std::string &filePath)
         std::string description = taskEntry.value()["description"];
         float x = taskEntry.value()["location"]["x"];
         float y = taskEntry.value()["location"]["y"];
+        int intensity = taskEntry.value()["intensity"];
+        int task_intensity_increment = taskEntry.value()["task_intensity_increment"];
+        int increment_interval = taskEntry.value()["increment_interval"];
 
-        tasks_.push_back({description, {x, y}});
+        tasks_.emplace_back(id, description, x, y, intensity, task_intensity_increment, increment_interval);
+    }
+}
+
+/*******************************************************************************/
+// Function to load robots from JSON file
+/*******************************************************************************/
+void Simulator::loadRobots(const std::string &filePath)
+{
+    std::ifstream robotFile(filePath);
+    if (!robotFile.is_open())
+    {
+        std::cerr << "Error opening robot file: " << filePath << std::endl;
+        return;
+    }
+
+    nlohmann::json robotData;
+    try
+    {
+        robotFile >> robotData;
+    }
+    catch (nlohmann::json::parse_error &e)
+    {
+        std::cerr << "Error parsing JSON: " << e.what() << std::endl;
+        return;
+    }
+    robotFile.close();
+
+    for (const auto &robotEntry : robotData["robots"].items())
+    {
+        int id = std::stoi(robotEntry.key());
+        std::string entity_type = robotEntry.value()["entity_type"];
+        float x = robotEntry.value()["location"]["x"];
+        float y = robotEntry.value()["location"]["y"];
+        float x_dot = robotEntry.value()["location"]["x_dot"];
+        float y_dot = robotEntry.value()["location"]["y_dot"];
+        int battery_level = robotEntry.value()["battery_level"];
+        int battery_decrement = robotEntry.value()["battery_decrement"];
+        int decrement_interval = robotEntry.value()["decrement_interval"];
+        int assigned_task = robotEntry.value()["assigned_task"];
+        int capacity = robotEntry.value()["capacity"];
+        int capacity_interval = robotEntry.value()["capacity_interval"];
+
+        robots_[id] = std::make_shared<Robot>(this, id, entity_type, x, y, x_dot, y_dot, battery_level, battery_decrement, decrement_interval, assigned_task, capacity, capacity_interval);
+    }
+}
+
+/*******************************************************************************/
+// Increment the intensity of tasks at their respective intervals
+/*******************************************************************************/
+void Simulator::incrementTaskIntensity()
+{
+    for (auto &task : tasks_)
+    {
+        if (clock_ % task.getIncrementInterval() == 0)
+        {
+            task.incrementIntensity();
+        }
+    }
+}
+
+/*******************************************************************************/
+// Check proximity of robots to tasks and decrement task intensity accordingly
+/*******************************************************************************/
+void Simulator::checkAndDecrementTaskIntensity()
+{
+    for (auto &[rid, robot] : robots_)
+    {
+        for (auto &task : tasks_)
+        {
+            if (robot->isWithinProximity(task.getLocation()) && robot->getAssignedTask() == task.getId())
+            {
+                if (clock_ % robot->getCapacityInterval() == 0)
+                {
+                    task.decrementIntensity(robot->getCapacity());
+                }
+            }
+        }
+    }
+}
+
+/*******************************************************************************/
+// Save the current state of tasks and robots to JSON files
+/*******************************************************************************/
+void Simulator::saveStateToJSON()
+{
+    nlohmann::json taskData;
+    for (const auto &task : tasks_)
+    {
+        taskData["tasks"][std::to_string(task.getId())] = task.toJSON();
+    }
+
+    std::ofstream taskFile("../config/task_information_centre.json");
+    if (taskFile.is_open())
+    {
+        taskFile << std::setw(4) << taskData << std::endl;
+        taskFile.close();
+    }
+
+    nlohmann::json robotData;
+    for (const auto &[rid, robot] : robots_)
+    {
+        robotData["robots"][std::to_string(rid)] = robot->toJSON();
+    }
+
+    std::ofstream robotFile("../config/robot_information_centre.json");
+    if (robotFile.is_open())
+    {
+        robotFile << std::setw(4) << robotData << std::endl;
+        robotFile.close();
     }
 }
 
@@ -103,19 +215,19 @@ void Simulator::draw()
     // Draw Ground
     DrawModel(graphics->groundModel_, graphics->groundModelpos_, 1., WHITE);
     // Draw Robots
-    for (auto [rid, robot] : robots_)
+    for (auto &[rid, robot] : robots_)
         robot->draw();
 
     // Draw Tasks
     for (const auto &task : tasks_)
     {
-        if (task.description == "fire")
+        if (task.getDescription() == "fire")
         {
-            DrawSphere(Vector3{task.location.x, 0.5f, task.location.y}, 2.0f, graphics->fireColor_);
+            DrawSphere(Vector3{task.getLocation().x(), 0.5f, task.getLocation().y()}, 2.0f, graphics->fireColor_);
         }
-        else if (task.description == "robbery")
+        else if (task.getDescription() == "robbery")
         {
-            DrawSphere(Vector3{task.location.x, 0.5f, task.location.y}, 2.0f, graphics->robberyColor_);
+            DrawSphere(Vector3{task.getLocation().x(), 0.5f, task.getLocation().y()}, 2.0f, graphics->robberyColor_);
         }
     }
 
@@ -134,7 +246,7 @@ void Simulator::timestep()
 
     // Create and/or destroy factors depending on a robot's neighbours
     calculateRobotNeighbours(robots_);
-    for (auto [r_id, robot] : robots_)
+    for (auto &[r_id, robot] : robots_)
     {
         robot->updateInterrobotFactors();
     }
@@ -151,7 +263,7 @@ void Simulator::timestep()
     }
 
     // Update the robot current and horizon states by one timestep
-    for (auto [r_id, robot] : robots_)
+    for (auto &[r_id, robot] : robots_)
     {
         robot->updateHorizon();
         robot->updateCurrent();
@@ -159,6 +271,12 @@ void Simulator::timestep()
 
     // Decrement battery levels at the appropriate intervals
     decrementBatteries();
+
+    // Increment task intensities at their respective intervals
+    incrementTaskIntensity();
+
+    // Check proximity of robots to tasks and decrement task intensity accordingly
+    checkAndDecrementTaskIntensity();
 
     // Update RIC at the specified intervals
     updateRIC();
@@ -175,13 +293,13 @@ void Simulator::timestep()
 /*******************************************************************************/
 void Simulator::calculateRobotNeighbours(std::map<int, std::shared_ptr<Robot>> &robots)
 {
-    for (auto [rid, robot] : robots)
+    for (auto &[rid, robot] : robots)
     {
         robot_positions_.at(rid) = std::vector<double>{robot->position_(0), robot->position_(1)};
     }
     treeOfRobots_->index->buildIndex();
 
-    for (auto [rid, robot] : robots)
+    for (auto &[rid, robot] : robots)
     {
         // Find nearest neighbors in radius
         robot->neighbours_.clear();
@@ -282,7 +400,7 @@ void Simulator::createOrDeleteRobots()
 
     std::vector<std::shared_ptr<Robot>> robots_to_create{};
     std::vector<std::shared_ptr<Robot>> robots_to_delete{};
-    Eigen::VectorXd starting, turning, ending; // Waypoints : [x,y,xdot,ydot].
+    Eigen::VectorXd starting, turning, ending; // Waypoints: [x, y, xdot, ydot].
 
     // Read the JSON configuration file
     std::ifstream config_file("../config/robot_information_centre.json");
@@ -311,7 +429,7 @@ void Simulator::createOrDeleteRobots()
 
     if (globals.FORMATION == "circle")
     {
-        // Robots must travel to opposite sides of circle
+        // Robots must travel to opposite sides of the circle
         new_robots_needed_ = false;
         float min_circumference_spacing = 5. * globals.ROBOT_RADIUS;
         double min_radius = 0.25 * globals.WORLD_SZ;
@@ -361,7 +479,7 @@ void Simulator::createOrDeleteRobots()
         }
 
         // Delete robots if out of bounds
-        for (auto [rid, robot] : robots_)
+        for (auto &[rid, robot] : robots_)
         {
             if (abs(robot->position_(0)) > globals.WORLD_SZ / 2 || abs(robot->position_(1)) > globals.WORLD_SZ / 2)
             {
@@ -399,7 +517,7 @@ void Simulator::createOrDeleteRobots()
         }
 
         // Delete robots if out of bounds
-        for (auto [rid, robot] : robots_)
+        for (auto &[rid, robot] : robots_)
         {
             if (abs(robot->position_(0)) > globals.WORLD_SZ / 2 || abs(robot->position_(1)) > globals.WORLD_SZ / 2)
             {
@@ -480,7 +598,6 @@ void Simulator::createOrDeleteRobots()
             }
         }
     }
-
     else
     {
         std::cerr << "Shouldn't reach here, formation not defined!" << std::endl;
@@ -520,13 +637,16 @@ void Simulator::decrementBatteries()
 {
     for (auto &[rid, robot] : robots_)
     {
-        if (clock_ % robot->decrement_interval == 0)
+        if (clock_ % robot->getDecrementInterval() == 0)
         {
             robot->decrementBattery();
         }
     }
 }
 
+/*******************************************************************************/
+// Method to update the RIC of all robots
+/*******************************************************************************/
 void Simulator::updateRIC()
 {
     if (globals.real_time_updates && clock_ % globals.RIC_UPDATE_INTERVAL == 0)
@@ -550,18 +670,12 @@ void Simulator::updateRIC()
         }
         infile.close();
 
-        // Debug: Check if JSON content was read correctly
-        std::cout << "Debug: Read JSON content: " << j.dump(4) << std::endl;
-
         for (auto &[rid, robot] : robots_)
         {
             std::string rid_str = std::to_string(rid);
             if (j["robots"].contains(rid_str))
             {
-                // Update the battery level
-                j["robots"][rid_str]["battery_level"] = robot->battery_level;
-                // Debug: Print updated battery level
-                std::cout << "Debug: Updated Robot ID " << rid_str << " Battery Level to " << robot->battery_level << std::endl;
+                j["robots"][rid_str]["battery_level"] = robot->getBatteryLevel();
             }
             else
             {
@@ -577,8 +691,5 @@ void Simulator::updateRIC()
         }
         outfile << std::setw(4) << j << std::endl;
         outfile.close();
-
-        // Debug: Confirm file write
-        std::cout << "Debug: Successfully wrote updated JSON content to file." << std::endl;
     }
 }
