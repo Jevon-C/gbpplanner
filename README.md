@@ -34,6 +34,7 @@ make
 Modified build process for windows
 cmake -G "MinGW Makefiles" ..
 mingw32-make
+cmake -G "MinGW Makefiles" -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ ..
 ```
 
 ## Run examples
