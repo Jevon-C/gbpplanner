@@ -160,10 +160,16 @@ void Robot::decrementBattery()
         battery_level_ -= battery_decrement_;
         if (battery_level_ < 0)
         {
-            battery_level_ = 0; // Ensure battery level doesn't go negative
+            battery_level_ = 0;
+        }
+        writeBatteryToJSON();
+
+        if (battery_level_ == 0)
+        {
+            capacity_ = 0; // Set capacity to zero when battery is depleted
+            writeCapacityToJSON();
         }
     }
-    writeBatteryToJSON();
 }
 
 void Robot::writeBatteryToJSON()
@@ -183,6 +189,41 @@ void Robot::writeBatteryToJSON()
     if (j["robots"].contains(rid_str))
     {
         j["robots"][rid_str]["battery_level"] = battery_level_;
+    }
+    else
+    {
+        std::cerr << "Error: Robot ID " << rid_str << " not found in JSON." << std::endl;
+        return;
+    }
+
+    std::ofstream outfile("../config/robot_information_centre.json");
+    if (!outfile.is_open())
+    {
+        std::cerr << "Error opening config file for writing." << std::endl;
+        return;
+    }
+
+    outfile << std::setw(4) << j << std::endl;
+    outfile.close();
+}
+
+void Robot::writeCapacityToJSON()
+{
+    std::ifstream infile("../config/robot_information_centre.json");
+    if (!infile.is_open())
+    {
+        std::cerr << "Error opening config file." << std::endl;
+        return;
+    }
+
+    nlohmann::json j;
+    infile >> j;
+    infile.close();
+
+    std::string rid_str = std::to_string(rid_);
+    if (j["robots"].contains(rid_str))
+    {
+        j["robots"][rid_str]["capacity"] = capacity_;
     }
     else
     {

@@ -4,7 +4,7 @@
             "description": "fire",
             "id": 1,
             "increment_interval": 100,
-            "intensity": 20,
+            "intensity": 21,
             "location": {
                 "x": 0.0,
                 "y": 25.0
@@ -15,7 +15,7 @@
             "description": "robbery",
             "id": 2,
             "increment_interval": 100,
-            "intensity": 20,
+            "intensity": 32,
             "location": {
                 "x": 25.0,
                 "y": 25.0
