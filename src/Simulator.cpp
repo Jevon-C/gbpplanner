@@ -212,13 +212,11 @@ void Simulator::draw()
     BeginDrawing();
     ClearBackground(RAYWHITE);
     BeginMode3D(graphics->camera3d);
+
     // Draw Ground
     DrawModel(graphics->groundModel_, graphics->groundModelpos_, 1., WHITE);
-    // Draw Robots
-    for (auto &[rid, robot] : robots_)
-        robot->draw();
 
-    // Draw Tasks
+    // Draw Tasks first
     for (const auto &task : tasks_)
     {
         if (task.getDescription() == "fire")
@@ -229,6 +227,12 @@ void Simulator::draw()
         {
             DrawSphere(Vector3{task.getLocation().x(), 0.5f, task.getLocation().y()}, 2.0f, graphics->robberyColor_);
         }
+    }
+
+    // Draw Robots after tasks to render them above the tasks
+    for (auto &[rid, robot] : robots_)
+    {
+        robot->draw();
     }
 
     EndMode3D();
@@ -285,6 +289,9 @@ void Simulator::timestep()
     clock_++;
     if (clock_ >= globals.MAX_TIME)
         globals.RUN = false;
+
+    // Save state to JSON after each timestep
+    // saveStateToJSON();
 }
 
 /*******************************************************************************/

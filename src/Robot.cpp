@@ -460,10 +460,10 @@ void Robot::deleteInterrobotFactors(std::shared_ptr<Robot> other_robot)
 void Robot::draw()
 {
     Color col = (interrobot_comms_active_) ? color_ : GRAY;
+
     // Draw planned path
     if (globals.DRAW_PATH)
     {
-        static int debug = 0;
         for (auto [vid, variable] : variables_)
         {
             if (!variable->valid_)
@@ -473,6 +473,7 @@ void Robot::draw()
         for (auto [fid, factor] : factors_)
             factor->draw();
     }
+
     // Draw connected robots
     if (globals.DRAW_INTERROBOT)
     {
@@ -494,8 +495,10 @@ void Robot::draw()
             DrawCubeV(Vector3{(float)waypoints_[wp_idx](0), height_3D_, (float)waypoints_[wp_idx](1)}, Vector3{1.f * robot_radius_, 1.f * robot_radius_, 1.f * robot_radius_}, col);
         }
     }
-    // Draw the actual position of the robot. This uses the robotModel defined in Graphics.cpp, others can be used.
-    DrawModel(sim_->graphics->robotModel_, Vector3{(float)position_(0), height_3D_, (float)position_(1)}, robot_radius_, col);
+
+    // Draw the actual position of the robot. Adjust height to be above the tasks.
+    float adjusted_height = height_3D_ + 1.0f; // Ensure robot is above the task
+    DrawModel(sim_->graphics->robotModel_, Vector3{(float)position_(0), adjusted_height, (float)position_(1)}, robot_radius_, col);
 }
 
 /*******************************************************************************************/
