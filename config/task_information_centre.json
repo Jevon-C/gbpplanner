@@ -15,7 +15,7 @@
             "description": "robbery",
             "id": 2,
             "increment_interval": 100,
-            "intensity": 64,
+            "intensity": 20,
             "location": {
                 "x": 25.0,
                 "y": 25.0
