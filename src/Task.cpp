@@ -24,6 +24,8 @@ nlohmann::json Task::toJSON() const
     j["task_intensity_increment"] = task_intensity_increment_;
     j["increment_interval"] = increment_interval_;
     return j;
-};
+}
 
-std::string Task::getDescription() const { return description_; } // Added method
+std::string Task::getDescription() const { return description_; }
+
+int Task::getIntensity() const { return intensity_; } // Add this method

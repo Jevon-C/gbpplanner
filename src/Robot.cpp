@@ -135,7 +135,7 @@ Robot::Robot(Simulator *sim, int rid, std::string entity_type, float x, float y,
     position_ << x, y;
     velocity_ << x_dot, y_dot;
 }
-
+int Robot::getId() const { return rid_; }
 int Robot::getAssignedTask() const { return assigned_task_; }
 
 int Robot::getCapacityInterval() const { return capacity_interval_; }

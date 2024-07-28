@@ -15,6 +15,7 @@ public:
     void decrementIntensity(int amount);
     nlohmann::json toJSON() const;
     std::string getDescription() const; // Added method
+    int getIntensity() const; // Add this method
 
 private:
     int id_;

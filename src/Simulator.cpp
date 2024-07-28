@@ -138,13 +138,11 @@ void Simulator::loadRobots(const std::string &filePath)
 /*******************************************************************************/
 // Increment the intensity of tasks at their respective intervals
 /*******************************************************************************/
-void Simulator::incrementTaskIntensity()
-{
-    for (auto &task : tasks_)
-    {
-        if (clock_ % task.getIncrementInterval() == 0)
-        {
+void Simulator::incrementTaskIntensity() {
+    for (auto &task : tasks_) {
+        if (clock_ % task.getIncrementInterval() == 0) {
             task.incrementIntensity();
+            std::cout << "Task ID: " << task.getId() << " Intensity incremented to: " << task.getIntensity() << std::endl;
         }
     }
 }
@@ -163,12 +161,13 @@ void Simulator::checkAndDecrementTaskIntensity()
                 if (clock_ % robot->getCapacityInterval() == 0)
                 {
                     task.decrementIntensity(robot->getCapacity());
+                    std::cout << "Task ID: " << task.getId() << " Intensity decremented to: " << task.getIntensity()
+                              << " by Robot ID: " << robot->getId() << std::endl;
                 }
             }
         }
     }
 }
-
 /*******************************************************************************/
 // Save the current state of tasks and robots to JSON files
 /*******************************************************************************/

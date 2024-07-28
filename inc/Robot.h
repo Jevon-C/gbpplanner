@@ -36,6 +36,7 @@ public:
     void decrementBattery();
     void writeBatteryToJSON();
     bool isWithinProximity(const Eigen::Vector2f &task_location) const;
+    int getId() const;
     int getAssignedTask() const;
     int getCapacityInterval() const;
     int getCapacity() const;
