@@ -3,22 +3,22 @@
         "0": {
             "assigned_task": 1,
             "battery_decrement": 5,
-            "battery_level": 55,
+            "battery_level": 0,
             "capacity": 0,
             "capacity_interval": 100,
             "decrement_interval": 100,
             "ending_waypoint": {
-                "x": 40,
+                "x": 5,
                 "x_dot": 0,
-                "y": 40,
+                "y": 0,
                 "y_dot": 0
             },
             "entity_type": "fire truck",
             "id": 0,
             "location": {
-                "x": 5,
+                "x": 5.000000000000001,
                 "x_dot": 0,
-                "y": 0,
+                "y": 0.0,
                 "y_dot": 0
             },
             "starting_waypoint": {
@@ -32,7 +32,7 @@
             "assigned_task": 0,
             "battery_decrement": 5,
             "battery_level": 0,
-            "capacity": 1,
+            "capacity": 0,
             "capacity_interval": 100,
             "decrement_interval": 100,
             "ending_waypoint": {
@@ -44,9 +44,9 @@
             "entity_type": "police car",
             "id": 1,
             "location": {
-                "x": -5,
+                "x": -5.000000000000001,
                 "x_dot": 0,
-                "y": 0,
+                "y": 0.0,
                 "y_dot": 0
             },
             "starting_waypoint": {
@@ -59,8 +59,8 @@
         "2": {
             "assigned_task": 0,
             "battery_decrement": 5,
-            "battery_level": 0,
-            "capacity": 0,
+            "battery_level": 25,
+            "capacity": 1,
             "capacity_interval": 100,
             "decrement_interval": 1000,
             "ending_waypoint": {
@@ -72,9 +72,9 @@
             "entity_type": "ambulance",
             "id": 2,
             "location": {
-                "x": 0,
+                "x": 0.0,
                 "x_dot": 0,
-                "y": 5,
+                "y": 5.000000000000001,
                 "y_dot": 0
             },
             "starting_waypoint": {
@@ -87,8 +87,8 @@
         "3": {
             "assigned_task": 0,
             "battery_decrement": 5,
-            "battery_level": 0,
-            "capacity": 0,
+            "battery_level": 30,
+            "capacity": 1,
             "capacity_interval": 100,
             "decrement_interval": 1000,
             "ending_waypoint": {
@@ -100,9 +100,9 @@
             "entity_type": "fire truck",
             "id": 3,
             "location": {
-                "x": 0,
+                "x": 0.0,
                 "x_dot": 0,
-                "y": -5,
+                "y": -5.000000000000001,
                 "y_dot": 0
             },
             "starting_waypoint": {

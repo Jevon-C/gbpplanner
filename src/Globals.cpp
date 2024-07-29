@@ -48,7 +48,10 @@ void Globals::parse_global_args(std::ifstream &config_file)
 
     // Real-time updates parameter
     real_time_updates = j.value("real_time_updates", false);
-    RIC_UPDATE_INTERVAL = j.value("RIC_UPDATE_INTERVAL", 100); // Default value is 100
+    location_update_interval = j.value("location_update_interval", 100);   // Read the location update interval
+    RIC_UPDATE_INTERVAL = j.value("RIC_UPDATE_INTERVAL", 100);             // Default value is 100
+    temporal_history_interval = j.value("temporal_history_interval", 100); // Read the temporal history update interval
+    record_temporal_history = j.value("record_temporal_history", false);   // Read the flag to control temporal history recording
 }
 
 Globals::Globals() {};

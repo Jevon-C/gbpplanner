@@ -18,6 +18,10 @@ int main(int argc, char *argv[]){
     if (globals.parse_global_args(dargs)) return EXIT_FAILURE;  
     
     Simulator* sim = new Simulator();       // Initialise the simulator
+
+    // Initialize the temporal history
+    sim->initializeTemporalHistory();
+
     globals.RUN = true;
     while (globals.RUN){
 
@@ -31,4 +35,4 @@ int main(int argc, char *argv[]){
     delete sim;
 
     return 0;
-}    
+}  

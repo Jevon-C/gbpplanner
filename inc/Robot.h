@@ -44,6 +44,7 @@ public:
     int getCapacity() const;
     int getDecrementInterval() const;
     int getBatteryLevel() const;
+    Eigen::Vector2f getPosition() const;  // Define getPosition method
     void setCharging(bool charging);
     bool isCharging() const;
 
@@ -77,5 +78,5 @@ public:
 
 private:
     int num_variables_;
-    bool charging_; // Add this member variable
+    bool charging_; 
 };

@@ -5,8 +5,8 @@
                 "x": 40,
                 "y": 40
             },
-            "charge_rate_interval": 200,
-            "charge_increment": 10
+            "charge_rate_interval": 100,
+            "charge_increment": 1
         },
         "2": {
             "location": {
@@ -14,7 +14,7 @@
                 "y": -40
             },
             "charge_rate_interval": 200,
-            "charge_increment": 20
+            "charge_increment": 1
         }
     }
 }
