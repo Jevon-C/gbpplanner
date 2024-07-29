@@ -29,5 +29,6 @@
   "RIC_UPDATE_INTERVAL": 100,
   "location_update_interval": 100,
   "temporal_history_interval": 100,
-  "record_temporal_history": false
+  "record_temporal_history": true,
+  "use_dynamic_tasks": true
 }

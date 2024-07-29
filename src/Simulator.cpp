@@ -31,6 +31,13 @@ Simulator::Simulator()
     // Load charging stations from JSON file
     loadChargingStations("../config/charging_stations.json");
 
+  
+
+    if (globals.use_dynamic_tasks)
+    {
+        loadDynamicTasks("../config/dynamic_tasks.json");
+    }
+
     // For display only
     // User inputs an obstacle image where the obstacles are BLACK and background is WHITE.
     obstacleImg = LoadImage(globals.OBSTACLE_FILE.c_str());
@@ -39,7 +46,7 @@ Simulator::Simulator()
 
     // However, for calculation purposes the image needs to be inverted.
     ImageColorInvert(&obstacleImg);
-    graphics = new Graphics(obstacleImg);
+    graphics = new Graphics(obstacleImg, tasks_, charging_stations_, robots_);
 }
 
 /*******************************************************************************/
@@ -92,6 +99,7 @@ void Simulator::loadTasks(const std::string &filePath)
         int task_intensity_increment = taskEntry.value()["task_intensity_increment"];
         int increment_interval = taskEntry.value()["increment_interval"];
 
+        // Use the default value for introduction_time for these tasks
         tasks_.emplace_back(id, description, x, y, intensity, task_intensity_increment, increment_interval);
     }
 }
@@ -172,6 +180,61 @@ void Simulator::loadChargingStations(const std::string &filePath)
         int charge_increment = stationEntry.value()["charge_increment"];
 
         charging_stations_.emplace_back(id, x, y, charge_rate_interval, charge_increment);
+    }
+}
+
+// Method to load dynamic tasks from JSON file
+void Simulator::loadDynamicTasks(const std::string &filePath)
+{
+    std::ifstream taskFile(filePath);
+    if (!taskFile.is_open())
+    {
+        std::cerr << "Error opening dynamic task file: " << filePath << std::endl;
+        return;
+    }
+
+    json taskData;
+    try
+    {
+        taskFile >> taskData;
+    }
+    catch (json::parse_error &e)
+    {
+        std::cerr << "Error parsing dynamic tasks JSON: " << e.what() << std::endl;
+        return;
+    }
+    taskFile.close();
+
+    for (const auto &taskEntry : taskData["dynamic_tasks"])
+    {
+        int id = taskEntry["id"];
+        std::string description = taskEntry["description"];
+        float x = taskEntry["location"]["x"];
+        float y = taskEntry["location"]["y"];
+        int intensity = taskEntry["intensity"];
+        int task_intensity_increment = taskEntry["task_intensity_increment"];
+        int increment_interval = taskEntry["increment_interval"];
+        int introduction_time = taskEntry["introduction_time"];
+
+        dynamic_tasks_.emplace_back(id, description, x, y, intensity, task_intensity_increment, increment_interval, introduction_time);
+    }
+}
+
+// Method to check and introduce dynamic tasks
+void Simulator::checkAndIntroduceDynamicTasks()
+{
+    auto it = dynamic_tasks_.begin();
+    while (it != dynamic_tasks_.end())
+    {
+        if (clock_ >= it->getIntroductionTime())
+        {
+            tasks_.emplace_back(*it);
+            it = dynamic_tasks_.erase(it);
+        }
+        else
+        {
+            ++it;
+        }
     }
 }
 /*******************************************************************************/
@@ -382,6 +445,12 @@ void Simulator::timestep()
 
     // Update RIC at the specified intervals
     updateRIC();
+
+    // Check and introduce dynamic tasks
+    if (globals.use_dynamic_tasks)
+    {
+        checkAndIntroduceDynamicTasks();
+    }
 
     // Increase simulation clock by one timestep
     clock_++;

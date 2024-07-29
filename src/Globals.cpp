@@ -52,6 +52,7 @@ void Globals::parse_global_args(std::ifstream &config_file)
     RIC_UPDATE_INTERVAL = j.value("RIC_UPDATE_INTERVAL", 100);             // Default value is 100
     temporal_history_interval = j.value("temporal_history_interval", 100); // Read the temporal history update interval
     record_temporal_history = j.value("record_temporal_history", false);   // Read the flag to control temporal history recording
+    use_dynamic_tasks = j.value("use_dynamic_tasks", false);               // Read the flag to control use of dynamic tasks
 }
 
 Globals::Globals() {};

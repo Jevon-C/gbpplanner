@@ -6,7 +6,7 @@
 class Task
 {
 public:
-    Task(int id, std::string description, float x, float y, int intensity, int task_intensity_increment, int increment_interval);
+    Task(int id, const std::string &description, float x, float y, int intensity, int task_intensity_increment, int increment_interval, int introduction_time = 0);
 
     int getId() const;
     Eigen::Vector2f getLocation() const;
@@ -18,7 +18,9 @@ public:
     int getIntensity() const;
     void setBeingDecremented(bool flag);
     bool isBeingDecremented() const;
-    void writeToJSON() const; // Add this method declaration
+    void writeToJSON() const; 
+    int getIntroductionTime() const;
+    int introduction_time_;
 
 private:
     int id_;

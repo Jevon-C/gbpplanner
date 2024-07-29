@@ -4,7 +4,7 @@
             "description": "fire",
             "id": 1,
             "increment_interval": 100,
-            "intensity": 55,
+            "intensity": 29,
             "location": {
                 "x": 0.0,
                 "y": 25.0
@@ -15,7 +15,7 @@
             "description": "robbery",
             "id": 2,
             "increment_interval": 100,
-            "intensity": 55,
+            "intensity": 30,
             "location": {
                 "x": 25.0,
                 "y": 25.0
@@ -26,10 +26,21 @@
             "description": "accident",
             "id": 3,
             "increment_interval": 100,
-            "intensity": 55,
+            "intensity": 30,
             "location": {
                 "x": -35.0,
                 "y": -35.0
+            },
+            "task_intensity_increment": 1
+        },
+        "4": {
+            "description": "fire",
+            "id": 4,
+            "increment_interval": 100,
+            "intensity": 39,
+            "location": {
+                "x": 10.0,
+                "y": 10.0
             },
             "task_intensity_increment": 1
         }

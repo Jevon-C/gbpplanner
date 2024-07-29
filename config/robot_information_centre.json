@@ -59,8 +59,8 @@
         "2": {
             "assigned_task": 0,
             "battery_decrement": 5,
-            "battery_level": 25,
-            "capacity": 1,
+            "battery_level": 0,
+            "capacity": 0,
             "capacity_interval": 100,
             "decrement_interval": 1000,
             "ending_waypoint": {
@@ -87,7 +87,7 @@
         "3": {
             "assigned_task": 0,
             "battery_decrement": 5,
-            "battery_level": 30,
+            "battery_level": 10,
             "capacity": 1,
             "capacity_interval": 100,
             "decrement_interval": 1000,

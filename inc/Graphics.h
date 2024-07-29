@@ -10,6 +10,9 @@
 #include <rcamera.h> // rcamera.h includes the camera control functions
 #include "Globals.h" // Assuming globals is a separate header defining the globals
 #include "rlights.h" // Assuming rlights.h defines Light and MAX_LIGHTS
+#include "Task.h" // Include Task definition
+#include "ChargingStation.h" // Include ChargingStation definition
+#include "Robot.h" // Include Robot definition
 
 /**************************************************************************/
 // Graphics class that deals with the nitty-gritty of display.
@@ -22,7 +25,7 @@ class Graphics
 {
 public:
     // Constructor
-    Graphics(Image obstacleImg);
+    Graphics(Image obstacleImg, std::vector<Task>& tasks, std::vector<ChargingStation>& charging_stations, std::map<int, std::shared_ptr<Robot>>& robots);
     ~Graphics();
 
     Image obstacleImg_;      // Image representing obstacles in the environment
@@ -49,6 +52,11 @@ public:
     Color fireColor_;
     Color robberyColor_;
     Color accidentColor_;
+
+    // References to tasks, charging stations, and robots
+    std::vector<Task> &tasks_;
+    std::vector<ChargingStation> &charging_stations_;
+    std::map<int, std::shared_ptr<Robot>> &robots_;
 
     // Function to update camera based on mouse and key input
     void update_camera();

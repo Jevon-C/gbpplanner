@@ -1,0 +1,28 @@
+{
+    "dynamic_tasks": [
+        {
+            "description": "fire",
+            "id": 4,
+            "increment_interval": 100,
+            "intensity": 30,
+            "location": {
+                "x": 10.0,
+                "y": 10.0
+            },
+            "task_intensity_increment": 1,
+            "introduction_time": 1000
+        },
+        {
+            "description": "robbery",
+            "id": 5,
+            "increment_interval": 100,
+            "intensity": 40,
+            "location": {
+                "x": 20.0,
+                "y": 20.0
+            },
+            "task_intensity_increment": 1,
+            "introduction_time": 2000
+        }
+    ]
+}
