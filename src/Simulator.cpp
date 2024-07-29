@@ -31,8 +31,6 @@ Simulator::Simulator()
     // Load charging stations from JSON file
     loadChargingStations("../config/charging_stations.json");
 
-  
-
     if (globals.use_dynamic_tasks)
     {
         loadDynamicTasks("../config/dynamic_tasks.json");
@@ -325,7 +323,11 @@ void Simulator::saveStateToJSON()
     nlohmann::json taskData;
     for (const auto &task : tasks_)
     {
-        taskData["tasks"][std::to_string(task.getId())] = task.toJSON();
+        // Only save tasks with non-zero intensity
+        if (task.getIntensity() > 0)
+        {
+            taskData["tasks"][std::to_string(task.getId())] = task.toJSON();
+        }
     }
 
     std::ofstream taskFile("../config/task_information_centre.json");
@@ -347,6 +349,45 @@ void Simulator::saveStateToJSON()
         robotFile << std::setw(4) << robotData << std::endl;
         robotFile.close();
     }
+}
+
+/*******************************************************************************/
+// Removing the completed tasks from the task list
+/*******************************************************************************/
+void Simulator::removeCompletedTasks() {
+    std::ifstream taskFile("../config/task_information_centre.json");
+    if (!taskFile.is_open()) {
+        std::cerr << "Error opening task file: ../config/task_information_centre.json" << std::endl;
+        return;
+    }
+
+    json taskData;
+    try {
+        taskFile >> taskData;
+    } catch (json::parse_error &e) {
+        std::cerr << "Error parsing JSON: " << e.what() << std::endl;
+        return;
+    }
+    taskFile.close();
+
+    // Iterate over tasks and remove those with intensity 0
+    for (auto it = taskData["tasks"].begin(); it != taskData["tasks"].end(); ) {
+        if (it.value()["intensity"] <= 0) {
+            it = taskData["tasks"].erase(it);
+        } else {
+            ++it;
+        }
+    }
+
+    // Write the updated JSON back to the file
+    std::ofstream outFile("../config/task_information_centre.json");
+    if (!outFile.is_open()) {
+        std::cerr << "Error opening task file for writing: ../config/task_information_centre.json" << std::endl;
+        return;
+    }
+
+    outFile << std::setw(4) << taskData << std::endl;
+    outFile.close();
 }
 
 /*******************************************************************************/
@@ -451,6 +492,8 @@ void Simulator::timestep()
     {
         checkAndIntroduceDynamicTasks();
     }
+
+    removeCompletedTasks();
 
     // Increase simulation clock by one timestep
     clock_++;

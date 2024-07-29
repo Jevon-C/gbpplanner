@@ -133,6 +133,7 @@ public:
     void initializeTemporalHistory();
     void recordTemporalHistory();
     nlohmann::json captureCurrentState(); // Helper function
+    void removeCompletedTasks(); // Handler for the removal of completed tasks
 
     /*******************************************************************************/
     // RANDOM NUMBER GENERATOR.
