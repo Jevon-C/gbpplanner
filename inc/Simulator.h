@@ -75,6 +75,10 @@ public:
     // Function to save the current state of tasks and robots to JSON files
     void saveStateToJSON();
 
+    // Methods for handling dynamic tasks
+    void loadDynamicTasks(const std::string &filePath);
+    void checkAndIntroduceDynamicTasks();
+
     /*******************************************************************************/
     // Create new robots if needed. Handles deletion of robots out of bounds.
     // New formations must modify the vectors "robots to create" and optionally "robots_to_delete"
@@ -157,4 +161,5 @@ private:
     std::vector<Task> tasks_;                      // Ensure the Task class is defined and included properly
     std::map<int, std::shared_ptr<Robot>> robots_; // Map containing smart pointers to all robots, accessed by their rid.
     std::vector<ChargingStation> charging_stations_;
+    std::vector<Task> dynamic_tasks_;
 };

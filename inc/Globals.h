@@ -66,6 +66,7 @@ public:
     int RIC_UPDATE_INTERVAL = 100; // Interval for updating the RIC
     int temporal_history_interval = 100; // Interval for updating the temporal history
     bool record_temporal_history = false;  // Flag to control temporal history recording
+    bool use_dynamic_tasks = false;  // Flag to control use of dynamic tasks
 
     Globals();
     int parse_global_args(DArgs::DArgs &dargs);

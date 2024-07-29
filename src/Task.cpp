@@ -3,15 +3,19 @@
 #include <iostream>
 #include <iomanip>
 
-Task::Task(int id, std::string description, float x, float y, int intensity, int task_intensity_increment, int increment_interval)
-    : id_(id), description_(description), location_(x, y), intensity_(intensity), task_intensity_increment_(task_intensity_increment), increment_interval_(increment_interval), being_decremented_(false) {}
 
+Task::Task(int id, const std::string &description, float x, float y, int intensity, int task_intensity_increment, int increment_interval, int introduction_time)
+    : id_(id), description_(description), location_({x, y}), intensity_(intensity), task_intensity_increment_(task_intensity_increment), increment_interval_(increment_interval), introduction_time_(introduction_time) {}
 int Task::getId() const { return id_; }
 
 Eigen::Vector2f Task::getLocation() const { return location_; }
 
 int Task::getIncrementInterval() const { return increment_interval_; }
 
+int Task::getIntroductionTime() const
+{
+    return introduction_time_;
+}
 void Task::incrementIntensity()
 {
     intensity_ += task_intensity_increment_;

@@ -10,7 +10,8 @@
 // Please note: Raylib camera defines the world with positive X = right, positive Z = down, and positive Y = out-of-plane
 // But in our work we use the standard convention of positive X = right, positive Y = down, and positive Z = into-plane
 /**************************************************************************/
-Graphics::Graphics(Image obstacleImg) : obstacleImg_(ImageCopy(obstacleImg))
+Graphics::Graphics(Image obstacleImg, std::vector<Task> &tasks, std::vector<ChargingStation> &charging_stations, std::map<int, std::shared_ptr<Robot>> &robots)
+    : obstacleImg_(ImageCopy(obstacleImg)), tasks_(tasks), charging_stations_(charging_stations), robots_(robots)
 {
     if (!globals.DISPLAY)
         return;
