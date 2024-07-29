@@ -32,6 +32,7 @@ Robot::Robot(Simulator *sim,
             assigned_task_ = j["robots"][rid_str]["assigned_task"];
             capacity_ = j["robots"][rid_str]["capacity"];
             capacity_interval_ = j["robots"][rid_str]["capacity_interval"];
+            mode_ = j["robots"][rid_str].value("mode", "patrol"); // Read mode from JSON file
         }
         else
         {
@@ -45,6 +46,7 @@ Robot::Robot(Simulator *sim,
             assigned_task_ = 0;
             capacity_ = 1;
             capacity_interval_ = 100;
+            mode_ = "patrol";
         }
     }
     else
@@ -61,6 +63,7 @@ Robot::Robot(Simulator *sim,
         assigned_task_ = 0;
         capacity_ = 1;
         capacity_interval_ = 100;
+        mode_ = "patrol";
     }
 
     // Robot will always set its horizon state to move towards the next waypoint.
@@ -364,42 +367,49 @@ void Robot::updateCurrent()
 /***************************************************************************************************/
 void Robot::updateHorizon()
 {
-    // Horizon state moves towards the next waypoint.
-    // The Horizon state's velocity is capped at MAX_SPEED
-    auto horizon = getVar(-1);                                                                                                // get horizon state variable
-    Eigen::VectorXd dist_horz_to_goal = waypoints_.front()({0, 1}) - horizon->mu_({0, 1});                                    // Compute the distance between the horizon and the next (goal) waypoint
-    Eigen::VectorXd new_vel = dist_horz_to_goal.normalized() * std::min((double)globals.MAX_SPEED, dist_horz_to_goal.norm()); // Compute the new velocity of the robot
-    Eigen::VectorXd new_pos = horizon->mu_({0, 1}) + new_vel * globals.TIMESTEP;                                              // Calculate the new position of the robot by moving from the current position of the horizon state in the direction of the new velocity scaled by the timestep
+    // Update the mode by reading the JSON file
+    updateMode();
 
-    // Update horizon state with new pos and vel
-    horizon->mu_ << new_pos, new_vel;
-    horizon->change_variable_prior(horizon->mu_);
-
-    // If the horizon has reached the waypoint, pop that waypoint from the waypoints.
-    // Could add other waypoint behaviours here (maybe they might move, or change randomly).
-    if (dist_horz_to_goal.norm() < robot_radius_)
+    if (mode_ == "patrol")
     {
-        if (waypoints_.size() > 1)
-        {
-            waypoints_.pop_front();
-        }
-        else
-        {
-            // Check battery level and decide whether to head to a charging station
-            if (globals.AUTONOMOUS_CHARGING && battery_level_ < globals.BATTERY_THRESHOLD)
-            {
-                ChargingStation nearestStation = sim_->findNearestChargingStation(*this);
-                Eigen::VectorXd new_waypoint = Eigen::VectorXd(4);
-                new_waypoint << nearestStation.getLocation().x(),
-                    nearestStation.getLocation().y(),
-                    0.0, 0.0;
+        // Random patrol behavior as per previous code in the screenshot
+        auto horizon = getVar(-1);
+        Eigen::VectorXd dist_horz_to_goal = waypoints_.front()({0, 1}) - horizon->mu_({0, 1});
+        Eigen::VectorXd new_vel = dist_horz_to_goal.normalized() * std::min((double)globals.MAX_SPEED, dist_horz_to_goal.norm());
+        Eigen::VectorXd new_pos = horizon->mu_({0, 1}) + new_vel * globals.TIMESTEP;
 
-                waypoints_.push_back(new_waypoint);
-                state_ = HEADING_TO_CHARGING_STATION;
+        horizon->mu_ << new_pos, new_vel;
+        horizon->change_variable_prior(horizon->mu_);
+
+        if (dist_horz_to_goal.norm() < robot_radius_)
+        {
+            if (waypoints_.size() > 1)
+            {
+                waypoints_.pop_front();
+            }
+            waypoints_.front()(0) = 1. * sim_->random_int(-globals.WORLD_SZ / 2, globals.WORLD_SZ / 2);
+            waypoints_.front()(1) = 1. * sim_->random_int(-globals.WORLD_SZ / 2, globals.WORLD_SZ / 2);
+        }
+    }
+    else if (mode_ == "working")
+    {
+        // Existing working behavior
+        auto horizon = getVar(-1);
+        Eigen::VectorXd dist_horz_to_goal = waypoints_.front()({0, 1}) - horizon->mu_({0, 1});
+        Eigen::VectorXd new_vel = dist_horz_to_goal.normalized() * std::min((double)globals.MAX_SPEED, dist_horz_to_goal.norm());
+        Eigen::VectorXd new_pos = horizon->mu_({0, 1}) + new_vel * globals.TIMESTEP;
+
+        horizon->mu_ << new_pos, new_vel;
+        horizon->change_variable_prior(horizon->mu_);
+
+        if (dist_horz_to_goal.norm() < robot_radius_)
+        {
+            if (waypoints_.size() > 1)
+            {
+                waypoints_.pop_front();
             }
             else
             {
-                // Open the JSON file and read the new ending waypoint
                 std::ifstream config_file("../config/robot_information_centre.json");
                 if (!config_file.is_open())
                 {
@@ -435,13 +445,10 @@ void Robot::updateHorizon()
                     double waypoint_y_dot = robot_data.value("ending_waypoint.y_dot", 0.0);
 
                     Eigen::VectorXd new_waypoint = Eigen::VectorXd(4);
-                    new_waypoint << waypoint_x,
-                        waypoint_y,
-                        waypoint_x_dot,
-                        waypoint_y_dot;
+                    new_waypoint << waypoint_x, waypoint_y, waypoint_x_dot, waypoint_y_dot;
 
-                    // Add the new waypoint to the waypoints list
-                    waypoints_.push_back(new_waypoint);
+                    waypoints_.clear();                 // Clear existing waypoints
+                    waypoints_.push_back(new_waypoint); // Add the new waypoint to the waypoints list
                 }
                 else
                 {
@@ -452,6 +459,7 @@ void Robot::updateHorizon()
         }
     }
 }
+
 /***************************************************************************************************/
 /* Update the state of the robot */
 /***************************************************************************************************/
@@ -481,6 +489,47 @@ void Robot::setTarget(const Eigen::Vector2f &target)
     Eigen::VectorXd new_waypoint = Eigen::VectorXd(4);
     new_waypoint << target.x(), target.y(), 0.0, 0.0;
     waypoints_.push_back(new_waypoint);
+}
+/***************************************************************************************************/
+/* Periodically reading the mode of the robot */
+/***************************************************************************************************/
+void Robot::updateMode()
+{
+    std::ifstream config_file("../config/robot_information_centre.json");
+    if (!config_file.is_open())
+    {
+        std::cerr << "Error opening config file." << std::endl;
+        return;
+    }
+
+    if (config_file.peek() == std::ifstream::traits_type::eof())
+    {
+        std::cerr << "Error: Config file is empty!" << std::endl;
+        return;
+    }
+
+    nlohmann::json config_data;
+    try
+    {
+        config_file >> config_data;
+    }
+    catch (nlohmann::json::parse_error &e)
+    {
+        std::cerr << "Error parsing JSON: " << e.what() << std::endl;
+        return;
+    }
+    config_file.close();
+
+    std::string rid_str = std::to_string(rid_);
+    if (config_data["robots"].contains(rid_str))
+    {
+        mode_ = config_data["robots"][rid_str].value("mode", "patrol"); // Update mode from JSON file
+    }
+    else
+    {
+        std::cerr << "Error: Robot ID " << rid_str << " not found in JSON." << std::endl;
+        return;
+    }
 }
 
 /***************************************************************************************************/

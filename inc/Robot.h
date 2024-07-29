@@ -50,9 +50,10 @@ public:
     int getCapacity() const;
     int getDecrementInterval() const;
     int getBatteryLevel() const;
-    Eigen::Vector2f getPosition() const;  // Define getPosition method
+    Eigen::Vector2f getPosition() const; // Define getPosition method
     void setCharging(bool charging);
     bool isCharging() const;
+    void updateMode(); // Method for periodically reading the mode of the robot
 
     nlohmann::json toJSON() const;
 
@@ -86,9 +87,12 @@ public:
     void updateState();
     void setTarget(const Eigen::Vector2f &target);
 
+    // Working Mode Handling code
+    std::string mode_; //
+
 private:
     int num_variables_;
-    bool charging_; 
+    bool charging_;
     RobotState state_;
     Eigen::Vector2f target_;
 };
