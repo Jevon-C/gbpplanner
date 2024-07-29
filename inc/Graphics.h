@@ -44,8 +44,11 @@ public:
     // Task Models and Colors
     Model fireModel_;
     Model robberyModel_;
+    Model accidentModel_; 
+
     Color fireColor_;
     Color robberyColor_;
+    Color accidentColor_;
 
     // Function to update camera based on mouse and key input
     void update_camera();

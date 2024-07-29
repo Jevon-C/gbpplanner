@@ -312,6 +312,10 @@ void Simulator::draw()
         {
             DrawSphere(Vector3{task.getLocation().x(), 0.5f, task.getLocation().y()}, 2.0f, graphics->robberyColor_);
         }
+        else if (task.getDescription() == "accident")
+        {
+            DrawSphere(Vector3{task.getLocation().x(), 0.5f, task.getLocation().y()}, 2.0f, graphics->accidentColor_);
+        }
     }
 
     // Draw Charging Stations

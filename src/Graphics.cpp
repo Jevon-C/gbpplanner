@@ -55,6 +55,10 @@ Graphics::Graphics(Image obstacleImg) : obstacleImg_(ImageCopy(obstacleImg))
     robberyModel_.materials[0].shader = lightShader_;
     robberyColor_ = GRAY;
 
+    accidentModel_ = LoadModelFromMesh(GenMeshSphere(1., 50.0f, 50.0f));
+    accidentModel_.materials[0].shader = lightShader_;
+    accidentColor_ = BLUE;
+
     // Height map
     Mesh mesh = GenMeshHeightmap(obstacleImg_, Vector3{1.f * globals.WORLD_SZ, 1.f * globals.ROBOT_RADIUS, 1.f * globals.WORLD_SZ});
     // Generate heightmap mesh (RAM and VRAM)
@@ -76,6 +80,7 @@ Graphics::~Graphics()
     UnloadTexture(texture_img_);
     UnloadModel(fireModel_);
     UnloadModel(robberyModel_);
+    UnloadModel(accidentModel_);
 }
 
 /******************************************************************************************/
