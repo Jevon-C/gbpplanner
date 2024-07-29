@@ -184,7 +184,7 @@ void Simulator::incrementTaskIntensity()
         if (clock_ % task.getIncrementInterval() == 0 && !task.isBeingDecremented())
         { // Check if task is being decremented
             task.incrementIntensity();
-            std::cout << "Task ID: " << task.getId() << " Intensity incremented to: " << task.getIntensity() << std::endl;
+            // std::cout << "Task ID: " << task.getId() << " Intensity incremented to: " << task.getIntensity() << std::endl;
         }
     }
 }
@@ -221,8 +221,8 @@ void Simulator::checkAndDecrementTaskIntensity()
                 if (clock_ % robot->getCapacityInterval() == 0)
                 {
                     task.decrementIntensity(robot->getCapacity());
-                    std::cout << "Task ID: " << task.getId() << " Intensity decremented to: " << task.getIntensity()
-                              << " by Robot ID: " << robot->getId() << std::endl;
+                    // std::cout << "Task ID: " << task.getId() << " Intensity decremented to: " << task.getIntensity()
+                    // << " by Robot ID: " << robot->getId() << std::endl;
                 }
             }
         }
@@ -245,7 +245,7 @@ void Simulator::checkAndChargeRobots()
                 if (clock_ % station.getChargeRateInterval() == 0)
                 {
                     robot->incrementBattery(station.getChargeIncrement());
-                    std::cout << "Robot ID: " << robot->getId() << " Battery incremented to: " << robot->getBatteryLevel() << std::endl;
+                    // std::cout << "Robot ID: " << robot->getId() << " Battery incremented to: " << robot->getBatteryLevel() << std::endl;
                 }
                 break;
             }
@@ -388,7 +388,7 @@ void Simulator::timestep()
     if (clock_ >= globals.MAX_TIME)
         globals.RUN = false;
 
-    if (clock_ % globals.temporal_history_interval == 0)
+    if (globals.record_temporal_history && clock_ % globals.temporal_history_interval == 0)
     {
         recordTemporalHistory();
     }

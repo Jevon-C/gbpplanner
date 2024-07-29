@@ -3,8 +3,8 @@
         "0": {
             "assigned_task": 1,
             "battery_decrement": 5,
-            "battery_level": 55,
-            "capacity": 1,
+            "battery_level": 0,
+            "capacity": 0,
             "capacity_interval": 100,
             "decrement_interval": 100,
             "ending_waypoint": {
@@ -31,8 +31,8 @@
         "1": {
             "assigned_task": 0,
             "battery_decrement": 5,
-            "battery_level": 20,
-            "capacity": 1,
+            "battery_level": 0,
+            "capacity": 0,
             "capacity_interval": 100,
             "decrement_interval": 100,
             "ending_waypoint": {
@@ -59,7 +59,7 @@
         "2": {
             "assigned_task": 0,
             "battery_decrement": 5,
-            "battery_level": 45,
+            "battery_level": 25,
             "capacity": 1,
             "capacity_interval": 100,
             "decrement_interval": 1000,
@@ -87,7 +87,7 @@
         "3": {
             "assigned_task": 0,
             "battery_decrement": 5,
-            "battery_level": 40,
+            "battery_level": 30,
             "capacity": 1,
             "capacity_interval": 100,
             "decrement_interval": 1000,

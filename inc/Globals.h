@@ -65,6 +65,7 @@ public:
     int location_update_interval; // Interval for updating the location of the robots
     int RIC_UPDATE_INTERVAL = 100; // Interval for updating the RIC
     int temporal_history_interval = 100; // Interval for updating the temporal history
+    bool record_temporal_history = false;  // Flag to control temporal history recording
 
     Globals();
     int parse_global_args(DArgs::DArgs &dargs);
