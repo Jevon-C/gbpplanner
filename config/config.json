@@ -3,7 +3,7 @@
   "ASSETS_DIR": "../assets/",
   "#": "Display parameters",
   "DISPLAY": 1,
-  "WORLD_SZ": 100,
+  "WORLD_SZ": 120,
   "SCREEN_SZ": 1000,
   "DRAW_INTERROBOT": 0,
   "DRAW_PATH": 0,
@@ -31,6 +31,6 @@
   "temporal_history_interval": 100,
   "record_temporal_history": true,
   "use_dynamic_tasks": true,
-  "BATTERY_THRESHOLD": 20.0, 
-  "AUTONOMOUS_CHARGING": true 
+  "BATTERY_THRESHOLD": 20.0,
+  "AUTONOMOUS_CHARGING": true
 }
