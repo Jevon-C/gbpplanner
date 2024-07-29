@@ -134,6 +134,7 @@ public:
     void recordTemporalHistory();
     nlohmann::json captureCurrentState(); // Helper function
     void removeCompletedTasks(); // Handler for the removal of completed tasks
+    ChargingStation findNearestChargingStation(const Robot &robot);
 
     /*******************************************************************************/
     // RANDOM NUMBER GENERATOR.

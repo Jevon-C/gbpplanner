@@ -14,6 +14,12 @@
 
 // Forward declaration of Simulator to avoid circular dependency
 class Simulator;
+enum RobotState
+{
+    WORKING,
+    HEADING_TO_CHARGING_STATION,
+    CHARGING
+};
 
 class Robot : public FactorGraph // Ensure FactorGraph is defined before this point
 {
@@ -76,7 +82,13 @@ public:
     std::vector<int> connected_r_ids_;
     std::vector<int> neighbours_;
 
+    // Handlers for autonomous charging
+    void updateState();
+    void setTarget(const Eigen::Vector2f &target);
+
 private:
     int num_variables_;
     bool charging_; 
+    RobotState state_;
+    Eigen::Vector2f target_;
 };

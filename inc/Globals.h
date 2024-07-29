@@ -67,6 +67,8 @@ public:
     int temporal_history_interval = 100; // Interval for updating the temporal history
     bool record_temporal_history = false;  // Flag to control temporal history recording
     bool use_dynamic_tasks = false;  // Flag to control use of dynamic tasks
+    float BATTERY_THRESHOLD = 20.0; // Threshold for robot to leave task and head to charging station
+    bool AUTONOMOUS_CHARGING = true; // Flag to control autonomous charging behavior
 
     Globals();
     int parse_global_args(DArgs::DArgs &dargs);

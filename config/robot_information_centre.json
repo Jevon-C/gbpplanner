@@ -2,9 +2,9 @@
     "robots": {
         "0": {
             "assigned_task": 1,
-            "battery_decrement": 1,
-            "battery_level": 100,
-            "capacity": 5,
+            "battery_decrement": 10,
+            "battery_level": 8,
+            "capacity": 0,
             "capacity_interval": 100,
             "decrement_interval": 100,
             "ending_waypoint": {
@@ -31,7 +31,7 @@
         "1": {
             "assigned_task": 0,
             "battery_decrement": 5,
-            "battery_level": 0,
+            "battery_level": 2,
             "capacity": 0,
             "capacity_interval": 100,
             "decrement_interval": 100,
@@ -59,7 +59,7 @@
         "2": {
             "assigned_task": 0,
             "battery_decrement": 5,
-            "battery_level": 0,
+            "battery_level": 85,
             "capacity": 0,
             "capacity_interval": 100,
             "decrement_interval": 1000,
@@ -87,7 +87,7 @@
         "3": {
             "assigned_task": 0,
             "battery_decrement": 5,
-            "battery_level": 5,
+            "battery_level": 95,
             "capacity": 1,
             "capacity_interval": 100,
             "decrement_interval": 1000,

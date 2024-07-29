@@ -235,6 +235,24 @@ void Simulator::checkAndIntroduceDynamicTasks()
         }
     }
 }
+
+ChargingStation Simulator::findNearestChargingStation(const Robot &robot)
+{
+    ChargingStation nearestStation = charging_stations_.front();
+    float minDistance = std::numeric_limits<float>::max();
+
+    for (const auto &station : charging_stations_)
+    {
+        float distance = (robot.getPosition() - station.getLocation()).norm();
+        if (distance < minDistance)
+        {
+            minDistance = distance;
+            nearestStation = station;
+        }
+    }
+
+    return nearestStation;
+}
 /*******************************************************************************/
 // Increment the intensity of tasks at their respective intervals
 /*******************************************************************************/

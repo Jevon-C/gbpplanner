@@ -30,5 +30,7 @@
   "location_update_interval": 100,
   "temporal_history_interval": 100,
   "record_temporal_history": true,
-  "use_dynamic_tasks": true
+  "use_dynamic_tasks": true,
+  "BATTERY_THRESHOLD": 20.0, 
+  "AUTONOMOUS_CHARGING": true 
 }

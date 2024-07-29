@@ -385,57 +385,102 @@ void Robot::updateHorizon()
         }
         else
         {
-            // Open the JSON file and read the new ending waypoint
-            std::ifstream config_file("../config/robot_information_centre.json");
-            if (!config_file.is_open())
+            // Check battery level and decide whether to head to a charging station
+            if (globals.AUTONOMOUS_CHARGING && battery_level_ < globals.BATTERY_THRESHOLD)
             {
-                std::cerr << "Error opening config file." << std::endl;
-                return;
-            }
-
-            if (config_file.peek() == std::ifstream::traits_type::eof())
-            {
-                std::cerr << "Error: Config file is empty!" << std::endl;
-                return;
-            }
-
-            nlohmann::json config_data;
-            try
-            {
-                config_file >> config_data;
-            }
-            catch (nlohmann::json::parse_error &e)
-            {
-                std::cerr << "Error parsing JSON: " << e.what() << std::endl;
-                return;
-            }
-            config_file.close();
-
-            std::string rid_str = std::to_string(rid_);
-            if (config_data["robots"].contains(rid_str))
-            {
-                auto robot_data = config_data["robots"][rid_str];
-                double waypoint_x = robot_data["ending_waypoint"]["x"];
-                double waypoint_y = robot_data["ending_waypoint"]["y"];
-                double waypoint_x_dot = robot_data.value("ending_waypoint.x_dot", 0.0);
-                double waypoint_y_dot = robot_data.value("ending_waypoint.y_dot", 0.0);
-
+                ChargingStation nearestStation = sim_->findNearestChargingStation(*this);
                 Eigen::VectorXd new_waypoint = Eigen::VectorXd(4);
-                new_waypoint << waypoint_x,
-                    waypoint_y,
-                    waypoint_x_dot,
-                    waypoint_y_dot;
+                new_waypoint << nearestStation.getLocation().x(),
+                    nearestStation.getLocation().y(),
+                    0.0, 0.0;
 
-                // Add the new waypoint to the waypoints list
                 waypoints_.push_back(new_waypoint);
+                state_ = HEADING_TO_CHARGING_STATION;
             }
             else
             {
-                std::cerr << "Error: Robot ID " << rid_str << " not found in JSON." << std::endl;
-                return;
+                // Open the JSON file and read the new ending waypoint
+                std::ifstream config_file("../config/robot_information_centre.json");
+                if (!config_file.is_open())
+                {
+                    std::cerr << "Error opening config file." << std::endl;
+                    return;
+                }
+
+                if (config_file.peek() == std::ifstream::traits_type::eof())
+                {
+                    std::cerr << "Error: Config file is empty!" << std::endl;
+                    return;
+                }
+
+                nlohmann::json config_data;
+                try
+                {
+                    config_file >> config_data;
+                }
+                catch (nlohmann::json::parse_error &e)
+                {
+                    std::cerr << "Error parsing JSON: " << e.what() << std::endl;
+                    return;
+                }
+                config_file.close();
+
+                std::string rid_str = std::to_string(rid_);
+                if (config_data["robots"].contains(rid_str))
+                {
+                    auto robot_data = config_data["robots"][rid_str];
+                    double waypoint_x = robot_data["ending_waypoint"]["x"];
+                    double waypoint_y = robot_data["ending_waypoint"]["y"];
+                    double waypoint_x_dot = robot_data.value("ending_waypoint.x_dot", 0.0);
+                    double waypoint_y_dot = robot_data.value("ending_waypoint.y_dot", 0.0);
+
+                    Eigen::VectorXd new_waypoint = Eigen::VectorXd(4);
+                    new_waypoint << waypoint_x,
+                        waypoint_y,
+                        waypoint_x_dot,
+                        waypoint_y_dot;
+
+                    // Add the new waypoint to the waypoints list
+                    waypoints_.push_back(new_waypoint);
+                }
+                else
+                {
+                    std::cerr << "Error: Robot ID " << rid_str << " not found in JSON." << std::endl;
+                    return;
+                }
             }
         }
     }
+}
+/***************************************************************************************************/
+/* Update the state of the robot */
+/***************************************************************************************************/
+
+void Robot::updateState()
+{
+    if (globals.AUTONOMOUS_CHARGING && battery_level_ < globals.BATTERY_THRESHOLD && state_ != CHARGING)
+    {
+        state_ = HEADING_TO_CHARGING_STATION;
+        ChargingStation nearestStation = sim_->findNearestChargingStation(*this);
+        setTarget(nearestStation.getLocation());
+    }
+
+    if (state_ == HEADING_TO_CHARGING_STATION && isWithinProximity(target_))
+    {
+        state_ = CHARGING;
+    }
+}
+
+/***************************************************************************************************/
+/* Set the target for the robot */
+/***************************************************************************************************/
+
+void Robot::setTarget(const Eigen::Vector2f &target)
+{
+    target_ = target;
+    Eigen::VectorXd new_waypoint = Eigen::VectorXd(4);
+    new_waypoint << target.x(), target.y(), 0.0, 0.0;
+    waypoints_.push_back(new_waypoint);
 }
 
 /***************************************************************************************************/

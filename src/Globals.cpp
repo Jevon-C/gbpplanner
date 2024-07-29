@@ -53,6 +53,9 @@ void Globals::parse_global_args(std::ifstream &config_file)
     temporal_history_interval = j.value("temporal_history_interval", 100); // Read the temporal history update interval
     record_temporal_history = j.value("record_temporal_history", false);   // Read the flag to control temporal history recording
     use_dynamic_tasks = j.value("use_dynamic_tasks", false);               // Read the flag to control use of dynamic tasks
+    BATTERY_THRESHOLD = j.value("BATTERY_THRESHOLD", 20.0);                // Read the battery threshold
+    AUTONOMOUS_CHARGING = j.value("AUTONOMOUS_CHARGING", true);            // Read the flag to control autonomous charging behavior
+    
 }
 
 Globals::Globals() {};
