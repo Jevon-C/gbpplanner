@@ -1,27 +1,27 @@
 {
     "robots": {
         "0": {
-            "assigned_task": 1,
+            "assigned_task": 0,
             "battery_decrement": 2,
             "battery_level": 0,
             "capacity": 0,
             "capacity_interval": 100,
             "decrement_interval": 100,
             "ending_waypoint": {
-                "x": 0,
+                "x": 0.0,
                 "x_dot": 0,
-                "y": 25,
+                "y": 25.0,
                 "y_dot": 0
             },
             "entity_type": "fire truck",
             "id": 0,
             "location": {
-                "x": 5.000000000000001,
+                "x": 0.0,
                 "x_dot": 0,
-                "y": 0.0,
+                "y": 25.0,
                 "y_dot": 0
             },
-            "mode": "working",
+            "mode": "patrol",
             "starting_waypoint": {
                 "x": 5,
                 "x_dot": 0,
@@ -30,22 +30,22 @@
             }
         },
         "1": {
-            "assigned_task": 2,
+            "assigned_task": 0,
             "battery_decrement": 0,
             "battery_level": 100,
             "capacity": 1,
             "capacity_interval": 100,
             "decrement_interval": 100,
             "ending_waypoint": {
-                "x": 0,
+                "x": 25.0,
                 "x_dot": 0,
-                "y": -5,
+                "y": 25.0,
                 "y_dot": 0
             },
             "entity_type": "police car",
             "id": 1,
             "location": {
-                "x": -5.000000000000001,
+                "x": -5.0,
                 "x_dot": 0,
                 "y": 0.0,
                 "y_dot": 0
@@ -66,9 +66,9 @@
             "capacity_interval": 100,
             "decrement_interval": 1000,
             "ending_waypoint": {
-                "x": 0,
+                "x": -35.0,
                 "x_dot": 0,
-                "y": 5,
+                "y": -35.0,
                 "y_dot": 0
             },
             "entity_type": "ambulance",
@@ -76,7 +76,7 @@
             "location": {
                 "x": 0.0,
                 "x_dot": 0,
-                "y": 5.000000000000001,
+                "y": 5.0,
                 "y_dot": 0
             },
             "mode": "patrol",
@@ -95,9 +95,9 @@
             "capacity_interval": 100,
             "decrement_interval": 1000,
             "ending_waypoint": {
-                "x": -5,
+                "x": 0.0,
                 "x_dot": 0,
-                "y": 0,
+                "y": 25.0,
                 "y_dot": 0
             },
             "entity_type": "fire truck",
@@ -105,7 +105,7 @@
             "location": {
                 "x": 0.0,
                 "x_dot": 0,
-                "y": -5.000000000000001,
+                "y": -5.0,
                 "y_dot": 0
             },
             "mode": "patrol",
@@ -113,6 +113,296 @@
                 "x": -5,
                 "x_dot": 0,
                 "y": 0,
+                "y_dot": 0
+            }
+        },
+        "4": {
+            "assigned_task": 0,
+            "battery_decrement": 3,
+            "battery_level": 75,
+            "capacity": 2,
+            "capacity_interval": 100,
+            "decrement_interval": 200,
+            "ending_waypoint": {
+                "x": 0.0,
+                "x_dot": 0,
+                "y": 25.0,
+                "y_dot": 0
+            },
+            "entity_type": "fire truck",
+            "id": 4,
+            "location": {
+                "x": -23.45,
+                "x_dot": 0,
+                "y": 19.78,
+                "y_dot": 0
+            },
+            "mode": "patrol",
+            "starting_waypoint": {
+                "x": 10.0,
+                "x_dot": 0,
+                "y": 15.0,
+                "y_dot": 0
+            }
+        },
+        "5": {
+            "assigned_task": 0,
+            "battery_decrement": 1,
+            "battery_level": 90,
+            "capacity": 3,
+            "capacity_interval": 100,
+            "decrement_interval": 100,
+            "ending_waypoint": {
+                "x": 0.0,
+                "x_dot": 0,
+                "y": 25.0,
+                "y_dot": 0
+            },
+            "entity_type": "fire truck",
+            "id": 5,
+            "location": {
+                "x": -32.19,
+                "x_dot": 0,
+                "y": 8.57,
+                "y_dot": 0
+            },
+            "mode": "patrol",
+            "starting_waypoint": {
+                "x": 20.0,
+                "x_dot": 0,
+                "y": -10.0,
+                "y_dot": 0
+            }
+        },
+        "6": {
+            "assigned_task": 0,
+            "battery_decrement": 2,
+            "battery_level": 60,
+            "capacity": 1,
+            "capacity_interval": 100,
+            "decrement_interval": 150,
+            "ending_waypoint": {
+                "x": 0.0,
+                "x_dot": 0,
+                "y": 25.0,
+                "y_dot": 0
+            },
+            "entity_type": "fire truck",
+            "id": 6,
+            "location": {
+                "x": 22.48,
+                "x_dot": 0,
+                "y": -44.36,
+                "y_dot": 0
+            },
+            "mode": "patrol",
+            "starting_waypoint": {
+                "x": -15.0,
+                "x_dot": 0,
+                "y": -25.0,
+                "y_dot": 0
+            }
+        },
+        "7": {
+            "assigned_task": 0,
+            "battery_decrement": 2,
+            "battery_level": 85,
+            "capacity": 2,
+            "capacity_interval": 100,
+            "decrement_interval": 150,
+            "ending_waypoint": {
+                "x": -35.0,
+                "x_dot": 0,
+                "y": -35.0,
+                "y_dot": 0
+            },
+            "entity_type": "ambulance",
+            "id": 7,
+            "location": {
+                "x": -42.75,
+                "x_dot": 0,
+                "y": 30.12,
+                "y_dot": 0
+            },
+            "mode": "patrol",
+            "starting_waypoint": {
+                "x": 15.0,
+                "x_dot": 0,
+                "y": 25.0,
+                "y_dot": 0
+            }
+        },
+        "8": {
+            "assigned_task": 0,
+            "battery_decrement": 1,
+            "battery_level": 95,
+            "capacity": 3,
+            "capacity_interval": 100,
+            "decrement_interval": 100,
+            "ending_waypoint": {
+                "x": -35.0,
+                "x_dot": 0,
+                "y": -35.0,
+                "y_dot": 0
+            },
+            "entity_type": "ambulance",
+            "id": 8,
+            "location": {
+                "x": 38.16,
+                "x_dot": 0,
+                "y": -29.38,
+                "y_dot": 0
+            },
+            "mode": "patrol",
+            "starting_waypoint": {
+                "x": -10.0,
+                "x_dot": 0,
+                "y": -5.0,
+                "y_dot": 0
+            }
+        },
+        "9": {
+            "assigned_task": 0,
+            "battery_decrement": 2,
+            "battery_level": 70,
+            "capacity": 1,
+            "capacity_interval": 100,
+            "decrement_interval": 200,
+            "ending_waypoint": {
+                "x": 25.0,
+                "x_dot": 0,
+                "y": 10.0,
+                "y_dot": 0
+            },
+            "entity_type": "ambulance",
+            "id": 9,
+            "location": {
+                "x": -15.73,
+                "x_dot": 0,
+                "y": 48.23,
+                "y_dot": 0
+            },
+            "mode": "patrol",
+            "starting_waypoint": {
+                "x": 25.0,
+                "x_dot": 0,
+                "y": 10.0,
+                "y_dot": 0
+            }
+        },
+        "10": {
+            "assigned_task": 0,
+            "battery_decrement": 3,
+            "battery_level": 80,
+            "capacity": 2,
+            "capacity_interval": 100,
+            "decrement_interval": 100,
+            "ending_waypoint": {
+                "x": 25.0,
+                "x_dot": 0,
+                "y": 25.0,
+                "y_dot": 0
+            },
+            "entity_type": "police car",
+            "id": 10,
+            "location": {
+                "x": -30.56,
+                "x_dot": 0,
+                "y": 12.34,
+                "y_dot": 0
+            },
+            "mode": "patrol",
+            "starting_waypoint": {
+                "x": -15.0,
+                "x_dot": 0,
+                "y": -10.0,
+                "y_dot": 0
+            }
+        },
+        "11": {
+            "assigned_task": 0,
+            "battery_decrement": 1,
+            "battery_level": 90,
+            "capacity": 1,
+            "capacity_interval": 100,
+            "decrement_interval": 150,
+            "ending_waypoint": {
+                "x": 25.0,
+                "x_dot": 0,
+                "y": 25.0,
+                "y_dot": 0
+            },
+            "entity_type": "police car",
+            "id": 11,
+            "location": {
+                "x": 48.19,
+                "x_dot": 0,
+                "y": 27.63,
+                "y_dot": 0
+            },
+            "mode": "patrol",
+            "starting_waypoint": {
+                "x": 10.0,
+                "x_dot": 0,
+                "y": 5.0,
+                "y_dot": 0
+            }
+        },
+        "12": {
+            "assigned_task": 0,
+            "battery_decrement": 2,
+            "battery_level": 85,
+            "capacity": 3,
+            "capacity_interval": 100,
+            "decrement_interval": 200,
+            "ending_waypoint": {
+                "x": 25.0,
+                "x_dot": 0,
+                "y": 25.0,
+                "y_dot": 0
+            },
+            "entity_type": "police car",
+            "id": 12,
+            "location": {
+                "x": -45.23,
+                "x_dot": 0,
+                "y": -23.45,
+                "y_dot": 0
+            },
+            "mode": "patrol",
+            "starting_waypoint": {
+                "x": -5.0,
+                "x_dot": 0,
+                "y": 5.0,
+                "y_dot": 0
+            }
+        },
+        "13": {
+            "assigned_task": 0,
+            "battery_decrement": 2,
+            "battery_level": 85,
+            "capacity": 3,
+            "capacity_interval": 100,
+            "decrement_interval": 200,
+            "ending_waypoint": {
+                "x": 30.0,
+                "x_dot": 0,
+                "y": 30.0,
+                "y_dot": 0
+            },
+            "entity_type": "police car",
+            "id": 13,
+            "location": {
+                "x": 15.0,
+                "x_dot": 0,
+                "y": 15.0,
+                "y_dot": 0
+            },
+            "mode": "patrol",
+            "starting_waypoint": {
+                "x": 5.0,
+                "x_dot": 0,
+                "y": 5.0,
                 "y_dot": 0
             }
         }
