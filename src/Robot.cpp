@@ -5,6 +5,19 @@
 #include <fstream>
 #include <random> // Include random for std::random_device and std::mt19937
 
+// Implementation of the color mapping function
+Color Robot::getColorByType(const std::string &entity_type)
+{
+    if (entity_type == "fire truck")
+        return RED;
+    if (entity_type == "police car")
+        return BLUE;
+    if (entity_type == "ambulance")
+        return DARKGREEN;
+    return WHITE; // Default color if type is not recognized
+}
+
+
 Robot::Robot(Simulator *sim,
              int rid,
              std::deque<Eigen::VectorXd> waypoints,
@@ -126,6 +139,7 @@ Robot::Robot(Simulator *sim,
     }
 }
 
+
 Robot::Robot(Simulator *sim, int rid, std::string entity_type, float x, float y, float x_dot, float y_dot,
              int battery_level, int battery_decrement, int decrement_interval, int assigned_task,
              int capacity, int capacity_interval)
@@ -137,6 +151,7 @@ Robot::Robot(Simulator *sim, int rid, std::string entity_type, float x, float y,
 {
     position_ << x, y;
     velocity_ << x_dot, y_dot;
+    color_ = getColorByType(entity_type_);
 }
 int Robot::getId() const { return rid_; }
 int Robot::getAssignedTask() const { return assigned_task_; }

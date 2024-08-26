@@ -19,6 +19,7 @@
 #include "ChargingStation.h"
 #include "json.hpp" // Added to ensure JSON support
 #include <iostream> // Added for error logging
+#include "Robot.h"
 
 class Robot;
 class Graphics;
@@ -133,7 +134,7 @@ public:
     void initializeTemporalHistory();
     void recordTemporalHistory();
     nlohmann::json captureCurrentState(); // Helper function
-    void removeCompletedTasks(); // Handler for the removal of completed tasks
+    void removeCompletedTasks();          // Handler for the removal of completed tasks
     ChargingStation findNearestChargingStation(const Robot &robot);
 
     /*******************************************************************************/

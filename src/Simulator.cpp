@@ -824,10 +824,12 @@ void Simulator::createOrDeleteRobots()
                     ending_waypoint_y_dot;
 
                 std::deque<Eigen::VectorXd> waypoints{starting, ending};
+                std::string entity_type = robot_data["entity_type"];
+
 
                 // Define robot radius and colour here.
                 float robot_radius = globals.ROBOT_RADIUS;
-                Color robot_color = ColorFromHSV(i * 360.0 / (float)globals.NUM_ROBOTS, 1.0, 0.75);
+                Color robot_color =  Robot::getColorByType(entity_type);
 
                 robots_to_create.push_back(std::make_shared<Robot>(this, current_rid, waypoints, robot_radius, robot_color));
             }

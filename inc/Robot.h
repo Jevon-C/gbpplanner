@@ -54,6 +54,7 @@ public:
     void setCharging(bool charging);
     bool isCharging() const;
     void updateMode(); // Method for periodically reading the mode of the robot
+    static Color getColorByType(const std::string &entity_type);
 
     nlohmann::json toJSON() const;
 
